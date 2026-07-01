@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/tripplannerz}
+    username: ${DB_USERNAME:tripplannerz}
+    password: ${DB_PASSWORD:tripplannerz}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.tripplannerz: debug
+    org.hibernate.SQL: debug
