@@ -19,8 +19,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleBusiness(BusinessException e) {
         ErrorCode code = e.getErrorCode();
         log.warn("business exception: {} - {}", code.getCode(), e.getMessage());
+        // ApiResponse.error -> ApiResponse.onFailure 로 변경
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(new ApiError(code.getCode(), e.getMessage())));
+                .body(ApiResponse.onFailure(new ApiError(code.getCode(), e.getMessage())));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -30,15 +31,17 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
                 .orElse(code.getMessage());
+        // ApiResponse.error -> ApiResponse.onFailure 로 변경
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(new ApiError(code.getCode(), message)));
+                .body(ApiResponse.onFailure(new ApiError(code.getCode(), message)));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnexpected(Exception e) {
         ErrorCode code = ErrorCode.INTERNAL_ERROR;
         log.error("unexpected exception", e);
+        // ApiResponse.error -> ApiResponse.onFailure 로 변경
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(new ApiError(code.getCode(), code.getMessage())));
+                .body(ApiResponse.onFailure(new ApiError(code.getCode(), code.getMessage())));
     }
 }

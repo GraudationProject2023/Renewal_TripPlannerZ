@@ -1,41 +1,35 @@
-version: '3'
-
+# 로컬 개발 인프라 (server/ 백엔드용). 앱은 컨테이너에 넣지 않고 로컬에서 실행한다.
+# 기본값은 server/src/main/resources/application-local.yml 와 일치.
 services:
-  database:
-    build: ./postgres
+  postgres:
+    image: postgres:16-alpine
+    container_name: tripplannerz-postgres
     restart: unless-stopped
-    container_name: postgres
     ports:
       - '5432:5432'
-    volumes:
-      - ./postgres/sqls:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_USERNAME: postgres
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: tripplannerz
+      POSTGRES_USER: tripplannerz
+      POSTGRES_PASSWORD: tripplannerz
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tripplannerz']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  nginx:
-    restart: always
-    build:
-      dockerfile: Dockerfile
-      context: ./nginx
-    ports:
-      - '49160:80'
-
-  cache:
-    container_name: redis
-    image: redis:alpine
+  redis:
+    image: redis:7-alpine
+    container_name: tripplannerz-redis
+    restart: unless-stopped
     ports:
       - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  backend:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./
-    container_name: app_backend
-
-  frontend:
-    build:
-      dockerfile: Dockerfile
-      context: ./client
-    container_name: app_frontend
-    stdin_open: true
+volumes:
+  postgres-data:

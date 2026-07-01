@@ -1,0 +1,68 @@
+version: 2.1
+
+# TripPlannerZ CI
+# - frontend: pnpm 모노레포(apps/web + packages/ui) 린트/타입체크/테스트/빌드
+# - backend : server/ Spring Boot(Gradle) 빌드+테스트
+# 배포(Vercel/서버)는 추후 별도 워크플로우로 추가한다.
+
+jobs:
+  frontend:
+    docker:
+      - image: cimg/node:22.11.0
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: Enable pnpm (corepack)
+          command: corepack enable
+      - restore_cache:
+          keys:
+            - pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
+            - pnpm-v1-
+      - run:
+          name: Install
+          command: pnpm install --frozen-lockfile
+      - save_cache:
+          key: pnpm-v1-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - ~/.local/share/pnpm/store
+      - run:
+          name: Lint
+          command: pnpm lint
+      - run:
+          name: Typecheck
+          command: pnpm typecheck
+      - run:
+          name: Test
+          command: pnpm test
+      - run:
+          name: Build
+          command: pnpm build
+
+  backend:
+    docker:
+      - image: cimg/openjdk:21.0
+    working_directory: ~/project/server
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - gradle-v1-{{ checksum "server/build.gradle.kts" }}
+            - gradle-v1-
+      - run:
+          name: Build & Test
+          command: ./gradlew build --no-daemon
+      - save_cache:
+          key: gradle-v1-{{ checksum "server/build.gradle.kts" }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+      - store_test_results:
+          path: build/test-results
+
+workflows:
+  ci:
+    jobs:
+      - frontend
+      - backend

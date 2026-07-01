@@ -1,44 +1,37 @@
-HELP.md
-.gradle
-settings.gradle
+# --- OS ---
+.DS_Store
+
+# --- Node / pnpm (monorepo) ---
+node_modules/
+.pnpm-store/
+.turbo/
+coverage/
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# --- Java / Gradle (server) ---
+.gradle/
+**/src/main/generated/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- IDE ---
+.idea/
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-application.properties
-application-dev.properties
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
+*.iws
 .vscode/
-/src/main/generated/
-
-node_modules
-DS_Store
+.classpath
+.project
+.settings/
