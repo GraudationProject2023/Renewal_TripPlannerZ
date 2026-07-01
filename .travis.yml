@@ -18,11 +18,11 @@ script:
 
 deploy:
   provider: elasticbeanstalk
-  region: "ap-northeast-2"
-  app: "tripplannerz"
-  env: "Tripplannerz-env"
-  bucket_name: "elasticbeanstalk-ap-northeast-2-815860262428"
-  bucket_path: "tripplannerz"
+  region: 'ap-northeast-2'
+  app: 'tripplannerz'
+  env: 'Tripplannerz-env'
+  bucket_name: 'elasticbeanstalk-ap-northeast-2-815860262428'
+  bucket_path: 'tripplannerz'
   on:
     branch: main
 
