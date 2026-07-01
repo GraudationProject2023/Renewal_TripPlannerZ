@@ -12,16 +12,23 @@
   <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-monorepo-EF4444?logo=turborepo&logoColor=white">
   <img alt="TailwindCSS" src="https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss&logoColor=white">
   <img alt="pnpm" src="https://img.shields.io/badge/pnpm-9-F69220?logo=pnpm&logoColor=white">
+  <br>
+  <img alt="Java" src="https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white">
+  <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?logo=springboot&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white">
+  <img alt="Redis" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white">
+  <img alt="CircleCI" src="https://img.shields.io/badge/CircleCI-343434?logo=circleci&logoColor=white">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-black">
 </p>
 
 ---
 
 > **📌 이 문서에 대하여**
-> 2023년 졸업작품으로 만든 프로젝트(`/client`, CRA · JavaScript)를 2026년 현재
+> 2023년 졸업작품(`/client` CRA·JS 프론트, `/src` Spring Boot·Java 백엔드)을 2026년 현재
 > 실서비스 수준으로 재설계하는 리라이트 기록입니다.
-> 레거시 코드는 보존하되(`/client`), 신규 구현은 모노레포(`/packages`, `/apps`)로 이관합니다.
-> 아래 기능 명세는 제품 스펙 기준이며, 실제 구현 현황은 [재구성 로드맵](#10-재구성-로드맵-legacy--rewrite)에서 상태로 구분합니다.
+> 레거시 코드는 참조용으로 보존하고, 신규 구현은 프론트 모노레포(`/apps`, `/packages`)와
+> 재작성 백엔드(`/server`)로 이관합니다.
+> 아래 기능 명세는 제품 스펙 기준이며, 실제 구현 현황은 [재구성 로드맵](#11-재구성-로드맵-legacy--rewrite)에서 상태로 구분합니다.
 
 ---
 
@@ -33,12 +40,13 @@
 4. [기술 스택](#4-기술-스택)
 5. [시스템 아키텍처](#5-시스템-아키텍처)
 6. [프론트엔드 아키텍처 (FSD)](#6-프론트엔드-아키텍처-fsd)
-7. [프로젝트 구조](#7-프로젝트-구조)
-8. [시작하기](#8-시작하기)
-9. [품질 · 테스트 · CI/CD](#9-품질--테스트--cicd)
-10. [재구성 로드맵 (Legacy → Rewrite)](#10-재구성-로드맵-legacy--rewrite)
-11. [비즈니스 모델 & 지표](#11-비즈니스-모델--지표)
-12. [팀 & 기간](#12-팀--기간)
+7. [백엔드 아키텍처 (Package-by-Feature)](#7-백엔드-아키텍처-package-by-feature)
+8. [프로젝트 구조](#8-프로젝트-구조)
+9. [시작하기](#9-시작하기)
+10. [품질 · 테스트 · CI/CD](#10-품질--테스트--cicd)
+11. [재구성 로드맵 (Legacy → Rewrite)](#11-재구성-로드맵-legacy--rewrite)
+12. [비즈니스 모델 & 지표](#12-비즈니스-모델--지표)
+13. [팀 & 기간](#13-팀--기간)
 
 ---
 
@@ -98,13 +106,13 @@
 
 ### 3.5 실시간 커뮤니케이션
 
-- 동행 확정자 간 채팅
+- 동행 확정자 간 채팅 (WebSocket/STOMP)
 - 일정 변경 · 지원 · 정산에 대한 **실시간 알림**
 
 ### 3.6 계정 & 신뢰
 
-- 소셜 로그인(OAuth) · 본인 인증
-- 토큰 기반 세션 관리 (access/refresh)
+- 소셜 로그인(OAuth2) · 이메일 인증
+- 토큰 기반 세션 관리 (JWT access/refresh, refresh는 Redis 회전)
 - 약관 동의 흐름 (`shared/config/terms.ts`)
 
 ### 3.7 국제화 (i18n)
@@ -113,6 +121,8 @@
 - 번역 키 스캔/동기화 스크립트(`i18n:scan`, `i18n:sync`)로 운영 자동화
 
 ## 4. 기술 스택
+
+### 프론트엔드
 
 **Core**
 
@@ -135,34 +145,51 @@
 **품질 · 문서화**
 
 - **Storybook 8** (+ Chromatic) — 디자인 시스템/컴포넌트 문서
-- **Jest** + **Testing Library** (단위/통합) · **Playwright** (E2E)
-- **MSW** (API 모킹)
+- **Jest** + **Testing Library** (단위/통합) · **Playwright** (E2E) · **MSW** (API 모킹)
+- **ESLint** (flat config) · **Prettier** · **Husky** + **lint-staged** · **commitlint** · **Changesets**
 
-**개발 경험 · 규약**
+### 백엔드
 
-- **ESLint** (flat config) · **Prettier** · **Husky** + **lint-staged** · **commitlint**
-- **Changesets** (패키지 버전 관리)
+**Core**
+
+- **Java 21 (LTS)** — record · sealed · pattern matching · virtual threads
+- **Spring Boot 3.5** · **Gradle (Kotlin DSL)**
+- **Spring Web (MVC)** · **Spring Data JPA** · **QueryDSL 5**
+
+**데이터 · 인증**
+
+- **PostgreSQL 16** (주 저장소) · **Redis 7** (토큰·캐시·rate limit)
+- **Flyway** (스키마 마이그레이션) · `ddl-auto: validate`
+- **Spring Security 6** + **OAuth2** + **JWT** (java-jwt, access/refresh + Redis 회전)
+
+**운영 · 품질**
+
+- **WebSocket + STOMP** (채팅·실시간 알림) · **Spring Mail** (이메일 인증)
+- **springdoc-openapi** (Swagger UI) · **MapStruct** · **Lombok**
+- **Actuator** + **Micrometer** · **JUnit 5** + **Testcontainers**
 
 ## 5. 시스템 아키텍처
 
 ![시스템 아키텍처 최종](https://github.com/GraudationProject2023/Client/assets/97590636/fd894fdf-fb06-4fae-99ca-feaaa075a1af)
 
 ```
-┌─────────────┐     ┌──────────────────┐     ┌───────────────┐
-│   Client    │────▶│   Next.js App     │────▶│   API Server  │
-│ (Web/Mobile)│     │  (SSR / BFF)      │     │  (REST)       │
-└─────────────┘     └──────────────────┘     └───────┬───────┘
-                              │                       │
-                    ┌─────────┴─────────┐   ┌─────────┴─────────┐
-                    │  Image Proxy /    │   │   PostgreSQL      │
-                    │  Static / CDN     │   │   (일정/동행/정산) │
-                    └───────────────────┘   └───────────────────┘
+┌──────────────┐    ┌─────────────────────┐    ┌────────────────────────┐
+│   Browser    │──▶ │  apps/web (Next.js)  │──▶ │  server (Spring Boot)  │
+│ (Web/Mobile) │    │  페이지 서빙 · BFF    │    │  REST API · /api/v1    │
+└──────────────┘    └──────────┬──────────┘    └───────────┬────────────┘
+                               │  render                   │
+                    ┌──────────┴──────────┐     ┌──────────┴───────────┐
+                    │  packages/ui (@ui)  │     │  PostgreSQL 16       │
+                    │  FSD (pages/…/shared)│     │  Redis 7 (토큰/캐시)  │
+                    └─────────────────────┘     └──────────────────────┘
 ```
 
-- **BFF 계층**: Next.js에서 인증 콜백/이미지 프록시/리다이렉트 등 클라이언트 경계 로직 처리
-  (`shared/config/api.ts`, `shared/config/image-proxy.ts`)
-- **인프라**: Docker · Nginx 리버스 프록시 · (레거시) Travis CI → 현행 GitHub Actions 이관 예정
-- **배포**: Vercel(프론트) + 컨테이너 기반 백엔드 (`docker-compose.yml`)
+- **프론트**: `apps/web`(Next.js)는 라우팅·서빙만 담당하고, 실제 화면·로직은 `packages/ui`(FSD)가 갖는다.
+  BFF 경계(인증 콜백·이미지 프록시·리다이렉트)는 `shared/config/api.ts`, `shared/config/image-proxy.ts`에서 처리.
+- **백엔드**: `server`(Spring Boot)가 `/api/v1` REST를 제공. 스키마는 **Flyway**로만 관리하고 PostgreSQL·Redis에 연결.
+- **로컬 인프라**: `docker-compose.yml`로 **PostgreSQL + Redis**만 컨테이너로 띄우고, 앱은 로컬에서 실행.
+- **CI**: **CircleCI**(`.circleci/config.yml`) — 프론트(pnpm) / 백엔드(Gradle) 잡 분리. (레거시 Travis·Docker Hub·AWS EB 파이프라인은 제거)
+- **배포**: 프론트 **Vercel**, 백엔드 배포 방식은 확정 예정.
 
 ## 6. 프론트엔드 아키텍처 (FSD)
 
@@ -173,41 +200,66 @@ app  →  processes  →  pages  →  widgets  →  features  →  entities  →
 (상위 레이어만 하위 레이어를 참조. 역방향 import 금지)
 ```
 
-현재 `packages/ui/shared` 레이어가 기반으로 구축되어 있습니다.
+- `apps/web`의 각 `page.tsx`는 `@ui`의 **pages 레이어**를 import 해서 렌더링만 한다.
+- 현재 `packages/ui/shared` 레이어가 기반으로 구축되어 있습니다.
+  - `shared/ui` — 디자인 시스템 프리미티브 (`Button` 등, Storybook 연동)
+  - `shared/api` — API 계약 타입 · 엔드포인트 정의
+  - `shared/lib` — 유틸리티 (auth 토큰, 포맷터, 마크다운, 파일, 폴리필, 힙 측정 등)
+  - `shared/config` — 앱/레이아웃/이미지 프록시/약관/환경 설정
 
-- `shared/ui` — 디자인 시스템 프리미티브 (`Button` 등, Storybook 연동)
-- `shared/api` — API 계약 타입 · 엔드포인트 정의
-- `shared/lib` — 유틸리티 (auth 토큰, 포맷터, 마크다운, 파일, 폴리필, 힙 측정 등)
-- `shared/config` — 앱/레이아웃/이미지 프록시/약관/환경 설정
+## 7. 백엔드 아키텍처 (Package-by-Feature)
 
-## 7. 프로젝트 구조
+기술 계층이 아니라 **도메인(기능) 우선**으로 패키지를 나눕니다. 도메인 내부에서만 계층을 둡니다.
+
+```
+com.tripplannerz
+├─ global/                 # 횡단 관심사 (도메인 무관)
+│  ├─ config/              # Security · Jpa(Auditing) · OpenAPI · Cors
+│  ├─ common/              # ApiResponse · PageResponse · BaseEntity
+│  ├─ error/               # ErrorCode(enum) · BusinessException · GlobalExceptionHandler
+│  ├─ security/            # JWT filter/provider (구현 예정)
+│  └─ util/
+└─ domain/
+   ├─ member/              # 회원/인증   (controller·service·repository·entity·dto·mapper)
+   ├─ trip/                # 여행 일정
+   ├─ companion/           # 동행 모집/지원/매칭
+   ├─ location/            # 장소·동선·경로 최적화
+   ├─ budget/              # 예산·정산
+   ├─ chat/                # 실시간 채팅 (STOMP)
+   └─ notification/        # 알림
+```
+
+- **표준 응답 래퍼**: 모든 API는 `{ success, data, error }` 포맷. 에러 코드는 `ErrorCode` enum으로 중앙 관리하며 프론트와 문자열 계약.
+- **경계 규칙**: 도메인 간 참조는 service 계층을 통해서만. 다른 도메인의 repository/entity 직접 접근 금지.
+- **영속성**: 엔티티는 `BaseEntity`(감사 필드, UTC) 상속, LAZY 기본 · QueryDSL로 동적 조회 · **Flyway**로 스키마 관리.
+
+## 8. 프로젝트 구조
 
 ```
 trip/
-├─ apps/                  # 실행 가능한 애플리케이션 (web 등) — 이관 진행 중
+├─ apps/
+│  └─ web/                 # Next.js — 라우팅/페이지 서빙 전용 (@ui를 렌더)
 ├─ packages/
-│  └─ ui/                 # 🎯 최신 버전: 디자인 시스템 + FSD shared 레이어
-│     ├─ shared/
-│     │  ├─ ui/           # 컴포넌트 (Button, ...)
-│     │  ├─ api/          # API 타입/클라이언트
-│     │  ├─ lib/          # utils (auth, format, markdown, file, i18n ...)
-│     │  └─ config/       # app/api/layout/image-proxy/terms/env
-│     ├─ global.css       # Tailwind v4 토큰
-│     └─ .storybook/      # 컴포넌트 문서
-├─ client/                # 🗄️ 레거시(2023, CRA·JS) — 참조용 보존
-├─ turbo.json             # 태스크 파이프라인
-├─ pnpm-workspace.yaml
-└─ docker-compose.yml     # 로컬 풀스택 구동
+│  └─ ui/                  # 🎯 프론트 본체: 디자인 시스템 + FSD
+│     └─ shared/           #   ui · api · lib · config (레이어 확장 예정)
+├─ server/                 # 🎯 백엔드 재작성: Spring Boot (Java 21, Gradle KTS)
+│  └─ src/main/java/com/tripplannerz/  # global · domain/*
+├─ client/                 # 🗄️ 프론트 레거시(2023, CRA·JS) — 참조용
+├─ src/                    # 🗄️ 백엔드 레거시(2023, Spring Boot 3.0.5) — 참조용
+├─ .circleci/config.yml    # CI (frontend / backend 잡)
+├─ docker-compose.yml      # 로컬 인프라 (PostgreSQL + Redis)
+├─ turbo.json              # 프론트 태스크 파이프라인
+└─ pnpm-workspace.yaml
 ```
 
-## 8. 시작하기
+## 9. 시작하기
 
 ### 요구 사항
 
-- Node.js **≥ 20.11**
-- pnpm **≥ 9**
+- Node.js **≥ 20.11** · pnpm **≥ 9**
+- JDK **21** (백엔드) · Docker (로컬 Postgres/Redis)
 
-### 설치 & 실행
+### 프론트엔드
 
 ```bash
 # 1. 의존성 설치
@@ -223,34 +275,49 @@ pnpm dev
 pnpm --filter @ui storybook   # http://localhost:6006
 ```
 
-> 💡 도커로 백엔드까지 한 번에: `docker-compose up`
+### 백엔드
+
+```bash
+# 1. 로컬 인프라 기동 (PostgreSQL + Redis)
+docker compose up -d
+
+# 2. 서버 실행 (기본 프로파일: local, http://localhost:8080)
+cd server && ./gradlew bootRun
+
+# 3. API 문서
+#   Swagger UI : http://localhost:8080/swagger-ui
+#   OpenAPI    : http://localhost:8080/v3/api-docs
+```
 
 ### 주요 스크립트
 
 | 명령                          | 설명                        |
 | ----------------------------- | --------------------------- |
 | `pnpm dev`                    | 전체 워크스페이스 개발 서버 |
-| `pnpm build`                  | 프로덕션 빌드               |
-| `pnpm test`                   | 테스트 실행                 |
+| `pnpm build`                  | 프론트 프로덕션 빌드        |
+| `pnpm test`                   | 프론트 테스트               |
 | `pnpm typecheck`              | 타입 체크                   |
 | `pnpm lint` / `pnpm lint:fix` | 린트 검사 / 자동 수정       |
 | `pnpm format`                 | Prettier 포맷팅             |
-| `pnpm --filter @ui i18n:scan` | 번역 키 스캔                |
+| `pnpm --filter @ui storybook` | 디자인 시스템               |
+| `./gradlew build` (server/)   | 백엔드 빌드 + 테스트        |
+| `./gradlew bootRun` (server/) | 백엔드 로컬 실행            |
 
-## 9. 품질 · 테스트 · CI/CD
+## 10. 품질 · 테스트 · CI/CD
 
-- **테스트 전략**
-  - 단위/통합: **Jest** + **Testing Library**
-  - E2E: **Playwright**
-  - 네트워크 모킹: **MSW** (개발/테스트 공용 핸들러)
-- **디자인 시스템**: **Storybook** + **Chromatic** 비주얼 리그레션
+- **프론트 테스트**: Jest + Testing Library(단위/통합) · Playwright(E2E) · MSW(모킹) · Storybook + Chromatic(비주얼 리그레션)
+- **백엔드 테스트**: JUnit 5 · `@WebMvcTest`/`@DataJpaTest`(슬라이스) · `@SpringBootTest` + **Testcontainers**(Postgres/Redis 통합)
+- **CI (CircleCI)** — `.circleci/config.yml`
+  - `frontend`: pnpm install → `lint` → `typecheck` → `test` → `build` (pnpm 스토어 캐시)
+  - `backend`: `./gradlew build` (Gradle 캐시 · 테스트 리포트 저장)
 - **커밋 게이트**: Husky `pre-commit`(lint-staged) · `commit-msg`(commitlint, Conventional Commits)
-- **버전 관리**: Changesets로 패키지 릴리즈 노트/버전 자동화
-- **성능 관측**: 번들 분석 · 힙 사용량 측정 스크립트(`check:heap`)
+- **버전/관측**: Changesets(패키지 릴리즈) · 번들/힙 분석(`check:heap`) · Actuator + Micrometer(백엔드 지표)
 
-## 10. 재구성 로드맵 (Legacy → Rewrite)
+## 11. 재구성 로드맵 (Legacy → Rewrite)
 
 3년 전 대비 무엇을, 왜 바꿨는지에 대한 기록입니다.
+
+### 프론트엔드
 
 | 영역       | 2023 (Legacy)  | 2026 (Rewrite)            | 이유                             |
 | ---------- | -------------- | ------------------------- | -------------------------------- |
@@ -260,21 +327,35 @@ pnpm --filter @ui storybook   # http://localhost:6006
 | 상태 관리  | 로컬 상태 위주 | TanStack Query + Zustand  | 서버/클라 상태 분리              |
 | 폼         | 수동 검증      | RHF + Zod                 | 선언적 검증 · 재사용             |
 | 스타일     | CSS            | Tailwind v4 + 디자인 토큰 | 일관성 · 속도                    |
-| 문서화     | 없음           | Storybook + Chromatic     | 컴포넌트 계약 · 협업             |
-| 국제화     | 국문 전용      | i18next 다국어            | 글로벌 확장                      |
+
+### 백엔드 · 인프라
+
+| 영역        | 2023 (Legacy)          | 2026 (Rewrite)             | 이유                            |
+| ----------- | ---------------------- | -------------------------- | ------------------------------- |
+| 언어/런타임 | Java 17                | Java 21 (LTS)              | 최신 언어 기능 · 가상 스레드    |
+| 프레임워크  | Spring Boot 3.0.5      | Spring Boot 3.5            | 최신 · 보안 패치                |
+| 빌드        | Groovy Gradle          | Gradle Kotlin DSL          | 타입 안전 빌드 스크립트         |
+| 패키지 구조 | 단일 패키지            | Package-by-Feature         | 도메인 경계 · 유지보수          |
+| 스키마 관리 | `ddl-auto: create`     | Flyway + `validate`        | 재현 가능·안전한 마이그레이션   |
+| API 문서    | 없음                   | springdoc OpenAPI          | 프론트 계약 · 협업              |
+| 테스트      | 빈약                   | JUnit 5 + Testcontainers   | 실제에 가까운 통합 테스트       |
+| CI/CD       | Travis + DockerHub +EB | CircleCI (front/back 분리) | 죽은 파이프라인 정리 · 현행화   |
+| 시크릿      | 코드에 평문 커밋       | 전부 환경변수 주입         | 보안 (레거시 크리덴셜은 폐기)   |
 
 **구현 현황 (체크리스트)**
 
-- [x] 모노레포/툴체인(Turbo, ESLint flat, Husky, commitlint, Changesets)
-- [x] `shared` 레이어(config/lib/api/ui) 기반
-- [x] 디자인 시스템 프리미티브(Button) · Storybook 셋업
-- [x] Axios 인스턴스 · 토큰 · 이미지 프록시 · i18n 스캐폴딩
-- [ ] `entities` / `features` 레이어 이관
-- [ ] 일정 · 타임라인 DnD · 경로 최적화
-- [ ] 동행 매칭 · 채팅 · 정산
-- [ ] E2E(Playwright) 시나리오 커버리지
+- [x] 프론트 모노레포/툴체인(Turbo, ESLint flat, Husky, commitlint, Changesets)
+- [x] 프론트 `shared` 레이어(config/lib/api/ui) + 디자인 시스템(Button)/Storybook
+- [x] `apps/web` Next.js 스캐폴딩 (페이지 서빙 전용)
+- [x] 백엔드 `server` 스캐폴딩 (Gradle KTS · global 공통 계층 · 도메인 패키지 골격)
+- [x] 인프라 정리: 레거시 제거 · 로컬 docker-compose(Postgres/Redis) · CircleCI 도입
+- [ ] 프론트 `entities` / `features` / `pages` 레이어 이관
+- [ ] 백엔드 `member`(인증·JWT) 도메인 + Flyway 스키마
+- [ ] 일정 · 타임라인 DnD · 경로 최적화 (풀스택)
+- [ ] 동행 매칭 · 채팅(STOMP) · 정산 (풀스택)
+- [ ] E2E(Playwright) · 통합(Testcontainers) 커버리지
 
-## 11. 비즈니스 모델 & 지표
+## 12. 비즈니스 모델 & 지표
 
 **수익 모델(가설)**
 
@@ -287,7 +368,7 @@ pnpm --filter @ui storybook   # http://localhost:6006
 - North Star: **정산까지 완료된 동행 여행 수**
 - 보조: 일정 생성률 · 동행 신청→수락 전환율 · 7일 재방문율(WAU/MAU)
 
-## 12. 팀 & 기간
+## 13. 팀 & 기간
 
 - **기간**: 2023.04 – 2023.11 (MVP) · 2026 – (리라이트)
 - **인원**: FE 1 (이동욱) · BE 2 (홍용현, 최성보)
