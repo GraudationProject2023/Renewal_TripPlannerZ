@@ -10,9 +10,9 @@
 여행 일정 관리 · 예산 설계 · 동행자 매칭 플랫폼(TripPlannerZ)을
 **3년 전 CRA·JS 졸업작품(`/client`)에서 모노레포·TS·FSD로 처음부터 재구축**하는 프로젝트다.
 
-- `/client` — 레거시(2023). **참조 전용, 절대 수정하지 않는다.** 요구사항/UX 참고용.
-- `/src`, `/build`, `/postgres`, `/nginx`, `gradle*`, `docker*` 등 백엔드/인프라 — **지금은 건드리지 않는다.**
-- 신규 작업은 오직 `packages/ui`와 `apps/web`에서만 한다.
+- `/client` — 프론트 레거시(2023). **참조 전용, 절대 수정하지 않는다.** 요구사항/UX 참고용.
+- `/src` — 백엔드 레거시(Spring Boot 3.0.5 · Java 17). **재작성 대상.** 도메인/요구사항 참고용이며, 신규 구현은 아래 [백엔드 명세](#백엔드-server--java--spring-boot)를 따른다.
+- 프론트 신규 작업은 `packages/ui`(FSD) + `apps/web`(서빙), 백엔드 신규 작업은 재작성 스펙 기준으로 진행한다.
 
 ---
 
@@ -124,7 +124,7 @@ pnpm --filter @ui test         # ui 패키지 테스트만
 ## 7. 하지 말 것 (Don't)
 
 - ❌ `apps/web`에 도메인 로직·상태·API·복잡한 컴포넌트 작성 (→ `packages/ui`로)
-- ❌ 레거시 `/client` 수정, 백엔드/인프라(`src`, `postgres`, `nginx`, gradle, docker) 손대기
+- ❌ 프론트 레거시 `/client` 수정 (참조 전용). 백엔드 레거시 `/src`는 재작성 대상이지만, 재작성 스펙과 무관한 부분을 임의로 방치·복붙하지 않는다.
 - ❌ 슬라이스 내부 파일 깊은 직접 import (배럴만 사용)
 - ❌ FSD 역방향/교차 의존
 - ❌ 디자인 토큰 무시하고 색/간격 하드코딩
@@ -137,3 +137,147 @@ pnpm --filter @ui test         # ui 패키지 테스트만
 - 환경변수는 `packages/ui/.env.example` 참고 (`NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_SITE_URL`,
   `NEXT_PUBLIC_SUPABASE_*` 등). `IS_DEV` 판별은 `shared/config/env.ts` 사용.
 - **패키지 설치 명령(pnpm/npm install 등)은 Claude가 직접 실행하지 않고 사용자에게 넘긴다.**
+
+---
+
+# 백엔드 (Server) — Java · Spring Boot
+
+> 레거시 서버(`/src`, Spring Boot 3.0.5 · Java 17 · 단일 패키지)는 **거의 전면 재작성**한다.
+> 도메인 지식(회원·여행·동행·위치·댓글/알림 등)만 계승하고, 구조·인증·API 계약·품질 기준은 아래를 새 기준선으로 삼는다.
+
+## 9. 목표 & 설계 원칙
+
+- **API-first**: 프론트(`@ui`)의 계약이 곧 서버 계약이다. OpenAPI 스펙을 단일 진실 소스로 유지한다.
+- **명확한 경계**: 도메인(비즈니스 규칙)과 인프라(JPA/외부 API/웹)를 섞지 않는다.
+- **얇은 컨트롤러, 두꺼운 서비스/도메인**: 컨트롤러는 검증·변환·위임만. 규칙은 도메인/서비스에.
+- **불변 우선**: DTO는 `record`, 엔티티는 setter 남발 금지(의미 있는 메서드로 상태 변경).
+- **재현 가능**: 스키마는 마이그레이션으로, 테스트는 컨테이너로, 실행은 프로파일로 결정한다.
+
+## 10. 기술 스택 (신규 기준선)
+
+- **Java 21 (LTS)** — record, sealed, pattern matching, **virtual threads** 활용
+- **Spring Boot 3.5.x** · **Gradle (Kotlin DSL 권장, `build.gradle.kts`)**
+- **Spring Web (MVC)** · **Spring Data JPA** · **QueryDSL 5 (jakarta)**
+- **PostgreSQL** (주 저장소) · **Redis** (토큰·캐시·세션·rate limit)
+- **Spring Security 6** + **OAuth2 Client/Resource Server** + **JWT** (access/refresh)
+- **Flyway** (스키마 마이그레이션, `V{n}__desc.sql`)
+- **Bean Validation (Jakarta Validation)**
+- **springdoc-openapi** (Swagger UI / OpenAPI 3)
+- **MapStruct** (엔티티↔DTO 매핑) · **Lombok** (보일러플레이트, 아래 정책 준수)
+- **WebSocket + STOMP** (채팅·실시간 알림) · **Spring Mail** (인증 메일)
+- 관측: **Spring Boot Actuator** + **Micrometer**
+- 테스트: **JUnit 5** · **Testcontainers** (Postgres/Redis) · **MockMvc/RestAssured** · **AssertJ**
+
+> 위 스택 밖 라이브러리는 먼저 제안 후 도입한다. 레거시의 `webflux`/`WebClient`는
+> 외부 API 호출 용도로만 제한적으로 사용하고, 애플리케이션 전반은 MVC로 통일한다.
+
+## 11. 패키지 구조 (Package-by-Feature)
+
+기술 계층 우선이 아니라 **도메인(기능) 우선**으로 나눈다. 도메인 내부에서만 계층을 둔다.
+
+```
+com.tripplannerz
+├─ global/                      # 횡단 관심사 (도메인 무관)
+│  ├─ config/                   # Security, Web, Jpa, Redis, OpenAPI, Cors ...
+│  ├─ common/                   # ApiResponse, PageResponse, BaseEntity(감사필드)
+│  ├─ error/                    # ErrorCode(enum), BusinessException, GlobalExceptionHandler
+│  ├─ security/                 # JWT provider/filter, 인증 principal, @CurrentUser
+│  └─ util/
+└─ domain/
+   ├─ member/                   # 회원/인증
+   │  ├─ controller/  service/  repository/  entity/  dto/  mapper/
+   ├─ trip/                     # 여행 일정
+   ├─ companion/                # 동행 모집/지원/매칭 (레거시 party/memberParty)
+   ├─ location/                 # 장소·동선·경로 최적화
+   ├─ budget/                   # 예산·정산
+   ├─ chat/                     # 실시간 채팅 (STOMP)
+   └─ notification/             # 알림
+```
+
+- 도메인 간 참조는 **service 계층을 통해서만**. 다른 도메인의 repository/entity 직접 접근 금지.
+- 순환 참조가 생기면 도메인 경계 설계가 틀린 신호로 보고 재검토한다.
+
+## 12. API 컨벤션
+
+- **REST 원칙**: 자원 복수형 명사(`/api/v1/trips`), 행위는 HTTP 메서드로. 버전 프리픽스 `/api/v1`.
+- **표준 응답 래퍼**: 모든 응답은 공통 포맷으로 감싼다.
+  ```json
+  { "success": true, "data": { }, "error": null }
+  { "success": false, "data": null, "error": { "code": "TRIP_NOT_FOUND", "message": "..." } }
+  ```
+- **에러 코드**: `ErrorCode` enum(코드·HTTP status·기본 메시지)으로 중앙 관리. 문자열 코드는 프론트와 계약.
+- **페이지네이션**: `page`/`size`/`sort` 쿼리, 응답은 `PageResponse`(content + 메타)로 통일.
+- **상태 코드**: 생성 201, 조회 200, 없음 404, 검증 실패 400, 인증/인가 401/403, 서버 500.
+- **날짜/시간**: 서버 저장·응답은 **UTC ISO-8601**. 표시는 클라이언트 책임.
+- **문서화**: 컨트롤러/DTO에 springdoc 애너테이션. `/swagger-ui`, `/v3/api-docs` 제공.
+
+## 13. 도메인 요구사항 (필수 기능)
+
+프론트 기능 명세(3절)와 1:1로 대응하는 서버 필수 기능.
+
+- **회원/인증**: 이메일 회원가입 + 메일 인증, 소셜 로그인(OAuth2), 로그인/로그아웃, 토큰 재발급, 회원 프로필·여행 성향(preference).
+- **여행 일정**: 일정 CRUD, 일자별 항목, 공개/비공개, 공유 링크, 이미지 업로드.
+- **위치/경로**: 장소 검색(외부 API 연동), 일정 내 장소 순서(order) 저장, **하루 동선 최단 경로 계산**.
+- **동행 매칭**: 모집글 CRUD, 지원/수락/거절, 참여자(memberParty) 관리, 정원·중복지원 제어.
+- **예산/정산**: 계획 예산·실제 지출, 참여자 간 분담/정산 계산.
+- **소통**: 동행 확정자 채팅(STOMP), 지원/수락/정산 이벤트 **알림**.
+- **신뢰/안전**: 매너 평점, 후기, 신고/차단.
+
+## 14. 영속성 규칙
+
+- 모든 엔티티는 `BaseEntity`(`createdAt`/`updatedAt`, JPA Auditing) 상속.
+- 연관관계는 **지연 로딩(LAZY) 기본**, `@ManyToOne`은 명시적으로 LAZY 지정. N+1은 **fetch join / `@EntityGraph` / QueryDSL**로 해결.
+- 동적/복잡 조회는 **QueryDSL** (`*RepositoryCustom` + `*RepositoryImpl`) 패턴 유지.
+- 스키마 변경은 **반드시 Flyway 마이그레이션**으로. `ddl-auto`는 로컬 `validate`(운영은 `none`), `create/update` 금지.
+- 트랜잭션: 조회는 `@Transactional(readOnly = true)`, 변경은 서비스 메서드 단위 `@Transactional`.
+
+## 15. 보안 · 인증
+
+- **JWT**: access(단수명) + refresh(장수명), **refresh는 Redis 저장/회전(rotation)** 및 로그아웃 시 블랙리스트.
+- **Spring Security 6**: `SecurityFilterChain` 빈 기반 설정, 상태 없는(stateless) 세션, JWT 필터 체인.
+- **인가**: 역할/권한 기반 접근제어, 리소스 소유자 검증(본인 일정/모집글만 수정).
+- **입력 신뢰 금지**: 서버측 Bean Validation 필수. 인증 정보는 토큰에서만, 요청 바디의 userId 신뢰 금지.
+- **비밀 관리**: 시크릿·키는 환경변수/외부 설정으로. 코드·레포에 하드코딩 금지.
+- CORS는 `global/config`에서 프론트 오리진만 허용.
+
+## 16. 예외 · 검증
+
+- 비즈니스 예외는 `BusinessException(ErrorCode)` 하나로 통일, `@RestControllerAdvice`의 `GlobalExceptionHandler`에서 표준 에러 응답으로 변환.
+- 검증 실패(`MethodArgumentNotValidException` 등)도 핸들러에서 필드 에러를 표준 포맷으로 반환.
+- 예상 가능한 흐름 제어에 예외를 남용하지 않는다.
+
+## 17. 테스트
+
+- **단위**: 도메인/서비스 로직 (mock 최소화, 순수 로직 우선).
+- **슬라이스**: `@WebMvcTest`(컨트롤러) · `@DataJpaTest`(리포지토리).
+- **통합**: `@SpringBootTest` + **Testcontainers**(Postgres/Redis)로 실제에 가깝게.
+- 핵심 도메인(정산 계산, 경로 최적화, 매칭 규칙)은 **경계값 테스트 필수**.
+- 테스트는 서로 독립적·반복 가능해야 하며, 공유 가변 상태 금지.
+
+## 18. 운영 · 관측성
+
+- **Actuator**: health/info/metrics 노출(민감 엔드포인트는 보호).
+- **로깅**: 구조적 로그 + 요청 상관관계 ID(MDC). 운영에서 민감정보 로깅 금지.
+- **프로파일**: `local` / `dev` / `prod` 분리. 비밀은 프로파일별 외부 설정.
+- **API 응답시간/에러율** 지표를 Micrometer로 수집.
+
+## 19. 빌드 · 실행
+
+```bash
+./gradlew build            # 빌드 + 테스트
+./gradlew test             # 테스트
+./gradlew bootRun          # 로컬 실행 (SPRING_PROFILES_ACTIVE=local)
+./gradlew clean            # 산출물 정리 (QueryDSL Q타입 포함)
+```
+
+- 로컬 인프라(Postgres/Redis)는 컨테이너로 기동한다.
+- **QueryDSL Q타입은 생성물**이므로 커밋/수정 금지 (`src/main/generated`는 산출물 취급).
+
+## 20. 백엔드 컨벤션 & Don't
+
+- **DTO는 `record`**, 요청/응답 DTO를 엔티티와 분리(엔티티 직접 노출 금지).
+- **Lombok 정책**: `@Getter`/`@Builder`/`@RequiredArgsConstructor`까지 허용. 엔티티 `@Setter`/`@Data` 금지, `@AllArgsConstructor` 남용 금지.
+- **매핑은 MapStruct** 또는 명시적 정적 팩터리. 수기 매핑 산발 금지.
+- **생성자 주입만** 사용(필드 주입 `@Autowired` 금지).
+- 커밋은 프론트와 동일하게 Conventional Commits, 커밋/푸시는 사용자 요청 시에만.
+- ❌ 엔티티를 컨트롤러 응답으로 그대로 반환 / ❌ `ddl-auto`로 스키마 관리 / ❌ 컨트롤러에 비즈니스 로직 / ❌ 다른 도메인 내부(repository·entity) 직접 침범 / ❌ 시크릿 하드코딩.
