@@ -24,6 +24,13 @@ app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
+# JWT. secret은 반드시 환경변수로 주입(운영). 아래 기본값은 로컬 개발 전용.
+jwt:
+  secret: ${JWT_SECRET:local-dev-only-secret-change-me-to-a-long-random-32B+-value-0123456789}
+  issuer: tripplannerz
+  access-token-validity-seconds: ${JWT_ACCESS_TTL:1800} # 30분
+  refresh-token-validity-seconds: ${JWT_REFRESH_TTL:1209600} # 14일
+
 management:
   endpoints:
     web:

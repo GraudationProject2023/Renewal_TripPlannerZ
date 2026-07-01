@@ -1,23 +1,33 @@
 package com.tripplannerz.global.config;
 
+import com.tripplannerz.global.security.JwtAuthenticationFilter;
+import com.tripplannerz.global.security.JwtProperties;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * 스캐폴딩용 최소 시큐리티 설정.
- * stateless + csrf off 기반선만 잡아두고, JWT 필터/인가 규칙은 인증 도메인 구현 시 채운다.
- * TODO: JWT 인증 필터 체인, 경로별 인가 규칙, OAuth2 로그인 연동.
+ * Stateless JWT 기반 시큐리티 설정.
+ * 공개 경로(문서/헬스, 회원가입, 로그인/재발급)만 permitAll, 그 외는 인증 필요.
+ * 인가(리소스 소유자 검증 등)는 각 도메인 서비스에서 추가로 다룬다.
  */
 @Configuration
+@EnableConfigurationProperties(JwtProperties.class)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_PATHS = {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private static final String[] PUBLIC_GET = {
         "/actuator/health",
         "/swagger-ui/**",
         "/v3/api-docs/**",
@@ -31,9 +41,11 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_PATHS).permitAll()
-                        // 스캐폴딩 단계: 그 외 전부 허용. 도메인 구현 시 잠근다.
-                        .anyRequest().permitAll());
+                        .requestMatchers(PUBLIC_GET).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/members").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/auth/reissue").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

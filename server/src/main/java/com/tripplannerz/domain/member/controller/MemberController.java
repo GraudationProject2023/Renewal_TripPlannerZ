@@ -7,6 +7,7 @@ import com.tripplannerz.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,11 @@ public class MemberController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<MemberResponse> signUp(@Valid @RequestBody SignUpRequest request) {
         return ApiResponse.success(memberService.signUp(request));
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<MemberResponse> getMyProfile(@AuthenticationPrincipal Long memberId) {
+        return ApiResponse.success(memberService.getById(memberId));
     }
 
     @GetMapping("/{id}")
