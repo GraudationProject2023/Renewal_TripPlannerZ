@@ -40,3 +40,5 @@ application-dev.properties
 .vscode/
 /src/main/generated/
 
+node_modules
+DS_Store

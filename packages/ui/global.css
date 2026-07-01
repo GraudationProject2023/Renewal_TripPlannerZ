@@ -1,0 +1,369 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+/*@import "tailwindcss/preflight.css" layer(base); */
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .markdown {
+    min-width: 0;
+  }
+  .markdown .hljs {
+    display: block;
+    background-color: transparent !important;
+  }
+  .markdown p,
+  .markdown ul,
+  .markdown ol,
+  .markdown pre,
+  .markdown blockquote {
+    margin-bottom: 0.375rem;
+  }
+  .markdown p:last-child {
+    margin-bottom: 0;
+  }
+  .markdown ul {
+    list-style-type: disc;
+    padding-left: 1.25rem;
+  }
+  .markdown ol {
+    list-style-type: decimal;
+    padding-left: 1.25rem;
+  }
+  .markdown li {
+    margin-bottom: 0.25rem;
+  }
+}
+
+@layer components {
+  .markdown pre {
+    max-width: 100%;
+    box-sizing: content-box;
+    font-size: var(--text-l500-12);
+    line-height: var(--text-l500-12--line-height);
+    background-color: var(--color-neutral-100) !important;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 12.5rem;
+    margin-block: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-400) transparent;
+  }
+  .markdown pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .markdown pre::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-400);
+    border-radius: 9999px;
+  }
+  .markdown pre::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  .markdown code {
+    font-size: var(--text-l500-12);
+    background-color: var(--color-neutral-100);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+  }
+  .markdown pre code {
+    display: block;
+    width: max-content;
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+}
+
+@layer components {
+  .markdown hr {
+    margin-block: 0.75rem;
+    border-color: var(--color-neutral-200);
+  }
+}
+
+@layer components {
+  .markdown h1 {
+    font-size: var(--text-l500-18);
+    line-height: var(--text-l500-18--line-height);
+    font-weight: 700;
+    margin-block: 0.75rem;
+  }
+  .markdown h2 {
+    font-size: var(--text-l500-16);
+    line-height: var(--text-l500-16--line-height);
+    font-weight: 700;
+    margin-block: 0.5rem;
+  }
+  .markdown h3 {
+    font-size: var(--text-l500-14);
+    line-height: var(--text-l500-14--line-height);
+    font-weight: 700;
+    margin-block: 0.5rem;
+  }
+  .markdown h4 {
+    font-size: var(--text-l500-14);
+    line-height: var(--text-l500-14--line-height);
+    font-weight: 600;
+    margin-block: 0.25rem;
+  }
+  .markdown h5 {
+    font-size: var(--text-l500-14);
+    line-height: var(--text-l500-14--line-height);
+    font-weight: 600;
+    margin-block: 0.25rem;
+  }
+  .markdown h6 {
+    font-size: var(--text-l500-14);
+    line-height: var(--text-l500-14--line-height);
+    font-weight: 600;
+    margin-block: 0.25rem;
+  }
+}
+
+@theme {
+  /* Colors */
+  --color-neutral-900: #2c2c2e;
+  --color-neutral-800: #3a3a3c;
+  --color-neutral-700: #48484a;
+  --color-neutral-600: #636366;
+  --color-neutral-500: #8e8e93;
+  --color-neutral-400: #aeaeb2;
+  --color-neutral-300: #c7c7cc;
+  --color-neutral-200: #dadae0;
+  --color-neutral-100: #e8ebee;
+  --color-neutral-75: #ededf3;
+  --color-neutral-50: #f9f9fb;
+  --color-neutral-0: #ffffff;
+
+  --color-primary-900: #2c1666;
+  --color-primary-800: #432099;
+  --color-primary-700: #592bcc;
+  --color-primary-600: #6f36ff;
+  --color-primary-500: #8c5eff;
+  --color-primary-400: #a986ff;
+  --color-primary-300: #c5afff;
+  --color-primary-200: #e2d7ff;
+  --color-primary-100: #eee8ff;
+  --color-primary-50: #f7f3ff;
+
+  --color-error-600: #e64848;
+  --color-error-500: #e95f5f;
+  --color-error-100: #fff0f0;
+
+  --color-blue-50: #dbeafe;
+  --color-blue-100: #eff6ff;
+  --color-blue-550: #007aff;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+
+  --color-teal-500: #30b0c7;
+
+  --color-file-pdf: #ff8487;
+  --color-file-docx: #69c3ff;
+  --color-file-txt: #8e8e93;
+  --color-file-md: #fab38a;
+  --color-file-gif: #efabd7;
+  --color-file-png: #c5afff;
+  --color-file-webp: #2495d3;
+  --color-file-jpg: #a3dea7;
+  --color-file-jpeg: #a3dea7;
+
+  --color-graph-root: #361a7f;
+  --color-graph-purple: #8f63ff;
+  --color-graph-blue: #6378ff;
+  --color-graph-magenta: #bc63ff;
+  --color-graph-purple-light: #f1ebff;
+  --color-graph-blue-light: #e3e7ff;
+  --color-graph-magenta-light: #f3e4ff;
+
+  /* Font Sizes & Line Heights */
+  --text-h700-48: 3rem;
+  --text-h700-48--line-height: 1.4;
+  --text-h700-40: 2.5rem;
+  --text-h700-40--line-height: 1.4;
+  --text-h700-28: 1.75rem;
+  --text-h700-28--line-height: 1.4;
+  --text-h700-24: 1.5rem;
+  --text-h700-24--line-height: 1.4;
+  --text-h700-20: 1.25rem;
+  --text-h700-20--line-height: 1.4;
+  --text-h700-18: 1.125rem;
+  --text-h700-18--line-height: 1.4;
+
+  --text-t600-28: 1.75rem;
+  --text-t600-28--line-height: 1.4;
+  --text-t600-24: 1.5rem;
+  --text-t600-24--line-height: 1.4;
+  --text-t600-20: 1.25rem;
+  --text-t600-20--line-height: 1.4;
+  --text-t600-18: 1.125rem;
+  --text-t600-18--line-height: 1.4;
+  --text-t600-16: 1rem;
+  --text-t600-16--line-height: 1.5;
+
+  --text-l500-28: 1.75rem;
+  --text-l500-28--line-height: 1.4;
+  --text-l500-24: 1.5rem;
+  --text-l500-24--line-height: 1.4;
+  --text-l500-20: 1.25rem;
+  --text-l500-20--line-height: 1.4;
+  --text-l500-18: 1.125rem;
+  --text-l500-18--line-height: 1.4;
+  --text-l500-16: 1rem;
+  --text-l500-16--line-height: 1.5;
+  --text-l500-14: 0.875rem;
+  --text-l500-14--line-height: 1.5;
+  --text-l500-12: 0.75rem;
+  --text-l500-12--line-height: 1.5;
+
+  --text-b400-18: 1.125rem;
+  --text-b400-18--line-height: 1.4;
+  --text-b400-16: 1rem;
+  --text-b400-16--line-height: 1.5;
+  --text-b400-14: 0.875rem;
+  --text-b400-14--line-height: 1.5;
+  --text-b400-12: 0.75rem;
+  --text-b400-12--line-height: 1.5;
+
+  /* Spacing */
+  --spacing-0.75: 0.1875rem;
+
+  /* Animations */
+  --animate-progress-fill: progress-fill 40s linear forwards;
+
+  @keyframes progress-fill {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+
+  /* Shadows */
+  --shadow-50: 0px 1px 4px rgba(12, 12, 13, 0.05);
+  --shadow-100: 0 2px 20px rgba(0, 0, 0, 0.06);
+
+  /* Utilities */
+  --height-21: 5.5rem;
+  --min-width-chatbot-panel: 20rem;
+}
+
+/* dark mode */
+@variant dark (&:where(.dark, .dark *));
+
+/* Loading Icon — Version 4 */
+.loading-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.loading-icon__shapes {
+  transform-origin: 10px 10px;
+  animation: loading-icon-spin 3.6s linear infinite;
+}
+
+.loading-icon__shape-1,
+.loading-icon__shape-2,
+.loading-icon__shape-3 {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.loading-icon__shape-1 {
+  animation: loading-icon-gather-1 3.6s ease-in-out infinite;
+}
+.loading-icon__shape-2 {
+  animation: loading-icon-gather-2 3.6s ease-in-out infinite;
+}
+.loading-icon__shape-3 {
+  animation: loading-icon-gather-3 3.6s ease-in-out infinite;
+}
+
+@keyframes loading-icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes loading-icon-gather-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40%,
+  60% {
+    transform: translate(0, 4.4px) scale(0.55);
+  }
+}
+
+@keyframes loading-icon-gather-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40%,
+  60% {
+    transform: translate(4.6px, 0.4px) scale(0.55);
+  }
+}
+
+@keyframes loading-icon-gather-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40%,
+  60% {
+    transform: translate(-2px, -2.4px) scale(0.55);
+  }
+}
+
+.chat-message-progress {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+}
+
+@starting-style {
+  .chat-message-progress {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-icon__shapes,
+  .loading-icon__shape-1,
+  .loading-icon__shape-2,
+  .loading-icon__shape-3 {
+    animation: none;
+  }
+}

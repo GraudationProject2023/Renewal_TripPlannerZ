@@ -1,6 +1,36 @@
 {
-  "dependencies": {
-    "react-autocomplete": "^1.8.1"
+  "name": "TripPlannerZ",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "coverage": "turbo run coverage",
+    "typecheck": "turbo run typecheck",
+    "lint": "pnpm lint:root && turbo run lint",
+    "lint:root": "eslint eslint.config.js commitlint.config.js lint-staged.config.js scripts/**/*.mjs",
+    "lint:fix": "pnpm lint:root:fix && turbo run lint -- --fix",
+    "lint:root:fix": "eslint eslint.config.js commitlint.config.js lint-staged.config.js scripts/**/*.mjs --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "commitlint": "commitlint",
+    "prepare": "husky"
   },
-  "packageManager": "pnpm@9.15.0+sha1.8bfdb6d72b4d5fdf87d21d27f2bfbe2b21dd2629"
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "engines": {
+    "node": ">=20.11.0",
+    "pnpm": ">=9"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ]
+  }
 }
