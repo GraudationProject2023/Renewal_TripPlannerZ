@@ -7,7 +7,7 @@ try {
     heapdump = require('heapdump')
   }
 } catch (e) {
-  console.warn('heapdump not available:', e.message)
+  console.warn('heapdump not available:', (e as Error).message)
 }
 
 import { join } from 'path'
