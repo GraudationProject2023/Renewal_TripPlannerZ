@@ -8,6 +8,8 @@ import com.tripplannerz.domain.companion.entity.CompanionApplication;
 import com.tripplannerz.domain.companion.mapper.CompanionApplicationMapper;
 import com.tripplannerz.domain.companion.repository.CompanionApplicationRepository;
 import com.tripplannerz.domain.companion.repository.CompanionRepository;
+import com.tripplannerz.domain.notification.entity.NotificationType;
+import com.tripplannerz.domain.notification.service.NotificationService;
 import com.tripplannerz.global.error.BusinessException;
 import com.tripplannerz.global.error.ErrorCode;
 import java.util.List;
@@ -23,6 +25,7 @@ public class CompanionApplicationService {
     private final CompanionApplicationRepository applicationRepository;
     private final CompanionRepository companionRepository;
     private final CompanionApplicationMapper applicationMapper;
+    private final NotificationService notificationService;
 
     @Transactional
     public ApplicationResponse apply(Long companionId, Long applicantId, ApplicationCreateRequest request) {
@@ -41,7 +44,13 @@ public class CompanionApplicationService {
                 .applicantId(applicantId)
                 .message(request.message())
                 .build();
-        return applicationMapper.toResponse(applicationRepository.save(application));
+        CompanionApplication saved = applicationRepository.save(application);
+        notificationService.create(
+                companion.getHostId(),
+                NotificationType.COMPANION_APPLICATION_RECEIVED,
+                "새로운 동행 지원이 도착했습니다.",
+                companionId);
+        return applicationMapper.toResponse(saved);
     }
 
     public List<ApplicationResponse> list(Long companionId, Long memberId) {
@@ -64,6 +73,11 @@ public class CompanionApplicationService {
         if (accepted + 1 >= companion.acceptableSlots()) {
             companion.close();
         }
+        notificationService.create(
+                application.getApplicantId(),
+                NotificationType.COMPANION_APPLICATION_ACCEPTED,
+                "동행 지원이 수락되었습니다.",
+                companionId);
         return applicationMapper.toResponse(application);
     }
 
@@ -72,6 +86,11 @@ public class CompanionApplicationService {
         requireHost(companionId, memberId);
         CompanionApplication application = findApplication(applicationId, companionId);
         application.reject();
+        notificationService.create(
+                application.getApplicantId(),
+                NotificationType.COMPANION_APPLICATION_REJECTED,
+                "동행 지원이 거절되었습니다.",
+                companionId);
         return applicationMapper.toResponse(application);
     }
 
