@@ -1,8 +1,0 @@
-.CommentList{
-    height: 600px;
-    overflow-y: auto;
-}
-
-.CardInfo::-webkit-scrollbar{
-    display: none;
-}
