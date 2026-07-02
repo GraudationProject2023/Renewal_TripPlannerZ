@@ -31,7 +31,12 @@ public enum ErrorCode {
 
     // --- Companion ---
     COMPANION_NOT_FOUND(HttpStatus.NOT_FOUND, "COMPANION_NOT_FOUND", "동행 모집글을 찾을 수 없습니다."),
-    COMPANION_INVALID_PERIOD(HttpStatus.BAD_REQUEST, "COMPANION_INVALID_PERIOD", "동행 종료일은 시작일보다 빠를 수 없습니다.");
+    COMPANION_INVALID_PERIOD(HttpStatus.BAD_REQUEST, "COMPANION_INVALID_PERIOD", "동행 종료일은 시작일보다 빠를 수 없습니다."),
+    COMPANION_NOT_RECRUITING(HttpStatus.CONFLICT, "COMPANION_NOT_RECRUITING", "모집 중인 동행이 아닙니다."),
+    COMPANION_FULL(HttpStatus.CONFLICT, "COMPANION_FULL", "모집 정원이 가득 찼습니다."),
+    CANNOT_APPLY_OWN(HttpStatus.BAD_REQUEST, "CANNOT_APPLY_OWN", "본인이 모집한 동행에는 지원할 수 없습니다."),
+    DUPLICATE_APPLICATION(HttpStatus.CONFLICT, "DUPLICATE_APPLICATION", "이미 지원한 동행입니다."),
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION_NOT_FOUND", "지원 내역을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
