@@ -54,7 +54,16 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, asChild = false, icon, children, type = 'button', ...props },
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      icon,
+      children,
+      type = 'button',
+      ...props
+    },
     ref,
   ) => {
     const Comp = asChild ? Slot : 'button'

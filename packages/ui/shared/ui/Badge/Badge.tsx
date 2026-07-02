@@ -12,15 +12,15 @@ const badgeVariants = cva(
         success: 'bg-success-50 text-success-700',
         warning: 'bg-warning-50 text-warning-700',
         error: 'bg-error-50 text-error-700',
-        outlined:
-          'border border-neutral-200 bg-transparent text-neutral-600',
+        outlined: 'border border-neutral-200 bg-transparent text-neutral-600',
       },
     },
     defaultVariants: { variant: 'neutral' },
   },
 )
 
-type BadgeProps = HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVariants>
+type BadgeProps = HTMLAttributes<HTMLSpanElement> &
+  VariantProps<typeof badgeVariants>
 
 export const Badge = ({ className, variant, ...props }: BadgeProps) => (
   <span className={cn(badgeVariants({ variant, className }))} {...props} />

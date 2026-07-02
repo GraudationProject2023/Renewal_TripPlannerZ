@@ -8,7 +8,11 @@ export const RadioGroup = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <RadioGroupPrimitive.Root ref={ref} className={cn('flex gap-2', className)} {...props} />
+  <RadioGroupPrimitive.Root
+    ref={ref}
+    className={cn('flex gap-2', className)}
+    {...props}
+  />
 ))
 RadioGroup.displayName = 'RadioGroup'
 
@@ -19,7 +23,7 @@ export const RadioGroupItem = forwardRef<
   <RadioGroupPrimitive.Item
     ref={ref}
     className={cn(
-      'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-neutral-300 bg-neutral-0 text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+      'bg-neutral-0 text-primary-600 focus-visible:ring-primary-400 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-neutral-300 focus-visible:ring-2 focus-visible:outline-none',
       'data-[state=checked]:border-primary-600',
       'disabled:cursor-not-allowed disabled:opacity-50',
       className,
@@ -33,7 +37,9 @@ export const RadioGroupItem = forwardRef<
 ))
 RadioGroupItem.displayName = 'RadioGroupItem'
 
-type RadioCardProps = ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & {
+type RadioCardProps = ComponentPropsWithoutRef<
+  typeof RadioGroupPrimitive.Item
+> & {
   label: string
   description?: string
 }
@@ -44,10 +50,10 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        'flex-1 rounded-lg border border-neutral-300 bg-neutral-0 px-3 py-2 text-left text-l500-14 text-neutral-600 transition-colors',
+        'bg-neutral-0 text-l500-14 flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-left text-neutral-600 transition-colors',
         'hover:bg-neutral-50',
         'data-[state=checked]:border-primary-600 data-[state=checked]:bg-primary-50 data-[state=checked]:text-primary-700',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+        'focus-visible:ring-primary-400 focus-visible:ring-2 focus-visible:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}
@@ -55,7 +61,9 @@ export const RadioCard = forwardRef<HTMLButtonElement, RadioCardProps>(
     >
       <div className="text-center font-medium">{label}</div>
       {description && (
-        <div className="mt-0.5 text-center text-l500-12 text-neutral-500">{description}</div>
+        <div className="text-l500-12 mt-0.5 text-center text-neutral-500">
+          {description}
+        </div>
       )}
     </RadioGroupPrimitive.Item>
   ),

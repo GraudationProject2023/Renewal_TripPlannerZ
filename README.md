@@ -70,28 +70,28 @@
 
 ## 2. 문제 정의와 해결 가설
 
-| 사용자 페인 포인트              | 기존 대안의 한계                             | TripPlannerZ의 접근                     |
-| ------------------------------- | -------------------------------------------- | --------------------------------------- |
-| 1인 여행 비용 부담              | 카페/오픈채팅 동행 모집은 신뢰·정산이 어려움 | 프로필·리뷰 기반 매칭 + 자동 정산       |
-| 일정 짜기가 번거로움            | 지도·블로그·메모장을 오가며 수작업           | 초안 구성 + DnD 편집 + 경로 최적화      |
-| 안전·신뢰 우려                  | 상대에 대한 정보 부족                        | 본인 인증, 매너 평점, 신고/차단         |
-| 언어 장벽 (인바운드/아웃바운드) | 국문 전용 서비스                             | i18n 다국어(ko/en) 기본 내장            |
+| 사용자 페인 포인트              | 기존 대안의 한계                             | TripPlannerZ의 접근                |
+| ------------------------------- | -------------------------------------------- | ---------------------------------- |
+| 1인 여행 비용 부담              | 카페/오픈채팅 동행 모집은 신뢰·정산이 어려움 | 프로필·리뷰 기반 매칭 + 자동 정산  |
+| 일정 짜기가 번거로움            | 지도·블로그·메모장을 오가며 수작업           | 초안 구성 + DnD 편집 + 경로 최적화 |
+| 안전·신뢰 우려                  | 상대에 대한 정보 부족                        | 본인 인증, 매너 평점, 신고/차단    |
+| 언어 장벽 (인바운드/아웃바운드) | 국문 전용 서비스                             | i18n 다국어(ko/en) 기본 내장       |
 
 > **핵심 가설**: "일정 → 동행 → 정산"을 끊김 없이 한 흐름으로 제공하면,
 > 동행 매칭의 전환율과 재방문율이 유의미하게 올라간다.
 
 ## 3. 핵심 기능
 
-| 도메인 | 기능 | 상태 |
-| --- | --- | --- |
-| **여행 일정** | 일정 CRUD · 공개/비공개 · 일자별 장소(메모/비용/체류시간) · DnD 재정렬 | ✅ API |
-| **경로 최적화** | 하루 동선 최단 경로(하버사인 + 최근접이웃) 미리보기/저장 | ✅ API |
-| **동행 매칭** | 모집글 CRUD · 지원/수락/거절 · 정원 관리 · 자동 마감 | ✅ API |
-| **예산 · 정산** | 지출 기록(N빵 분할) · 예산 요약 · 정산(잔액 + 최소 송금) | ✅ API |
-| **알림** | 지원/수락/거절 이벤트 알림 · 미읽음 수 · 읽음 처리 | ✅ API |
-| **채팅** | 동행별 채팅방 · 이력 · 실시간(STOMP 브로드캐스트) | ✅ API |
-| **계정 · 인증** | 회원가입 · JWT 로그인/재발급(회전)/로그아웃 · OAuth2(예정) | ✅ API |
-| **국제화** | i18next 다국어(ko/en), 키 스캔/동기화 | ✅ FE |
+| 도메인          | 기능                                                                   | 상태   |
+| --------------- | ---------------------------------------------------------------------- | ------ |
+| **여행 일정**   | 일정 CRUD · 공개/비공개 · 일자별 장소(메모/비용/체류시간) · DnD 재정렬 | ✅ API |
+| **경로 최적화** | 하루 동선 최단 경로(하버사인 + 최근접이웃) 미리보기/저장               | ✅ API |
+| **동행 매칭**   | 모집글 CRUD · 지원/수락/거절 · 정원 관리 · 자동 마감                   | ✅ API |
+| **예산 · 정산** | 지출 기록(N빵 분할) · 예산 요약 · 정산(잔액 + 최소 송금)               | ✅ API |
+| **알림**        | 지원/수락/거절 이벤트 알림 · 미읽음 수 · 읽음 처리                     | ✅ API |
+| **채팅**        | 동행별 채팅방 · 이력 · 실시간(STOMP 브로드캐스트)                      | ✅ API |
+| **계정 · 인증** | 회원가입 · JWT 로그인/재발급(회전)/로그아웃 · OAuth2(예정)             | ✅ API |
+| **국제화**      | i18next 다국어(ko/en), 키 스캔/동기화                                  | ✅ FE  |
 
 > 위 표의 상태는 **백엔드 API 기준**입니다. 프론트(FSD) 연동 현황은 [로드맵](#13-재구성-로드맵-legacy--rewrite) 참고.
 
@@ -173,17 +173,17 @@ com.tripplannerz
 
 모든 응답은 `{ success, data, error }` 래퍼로 감싸며, 인증 필요 엔드포인트는 `Authorization: Bearer <accessToken>`.
 
-| 도메인 | 대표 엔드포인트 |
-| --- | --- |
-| 인증/회원 | `POST /api/v1/members`(가입) · `POST /api/v1/auth/login\|reissue\|logout` · `GET /api/v1/members/me` |
-| 여행 일정 | `POST\|GET\|PUT\|DELETE /api/v1/trips[/{id}]` · `GET /api/v1/trips`(내 목록, 페이징) |
-| 일정 장소 | `POST\|GET /api/v1/trips/{id}/items` · `PUT .../items/reorder`(DnD) · `DELETE .../items/{itemId}` |
-| 경로 최적화 | `GET /api/v1/trips/{id}/route?day=N`(미리보기) · `POST .../route/optimize?day=N`(저장) |
-| 동행 | `POST\|GET /api/v1/companions` · `GET /mine` · `PUT\|GET /{id}` · `PATCH /{id}/close` |
-| 동행 지원 | `POST\|GET /api/v1/companions/{id}/applications` · `PATCH .../{appId}/accept\|reject` |
-| 예산/정산 | `POST\|GET /api/v1/trips/{id}/expenses` · `GET .../budget`(요약) · `GET .../settlement`(정산) |
-| 알림 | `GET /api/v1/notifications` · `GET /unread-count` · `PATCH /{id}/read` · `PATCH /read-all` |
-| 채팅 | `GET /api/v1/chat/rooms` · `GET\|POST /rooms/{roomId}/messages` · WS `/ws` → `/topic/chat.rooms.{roomId}` |
+| 도메인      | 대표 엔드포인트                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| 인증/회원   | `POST /api/v1/members`(가입) · `POST /api/v1/auth/login\|reissue\|logout` · `GET /api/v1/members/me`      |
+| 여행 일정   | `POST\|GET\|PUT\|DELETE /api/v1/trips[/{id}]` · `GET /api/v1/trips`(내 목록, 페이징)                      |
+| 일정 장소   | `POST\|GET /api/v1/trips/{id}/items` · `PUT .../items/reorder`(DnD) · `DELETE .../items/{itemId}`         |
+| 경로 최적화 | `GET /api/v1/trips/{id}/route?day=N`(미리보기) · `POST .../route/optimize?day=N`(저장)                    |
+| 동행        | `POST\|GET /api/v1/companions` · `GET /mine` · `PUT\|GET /{id}` · `PATCH /{id}/close`                     |
+| 동행 지원   | `POST\|GET /api/v1/companions/{id}/applications` · `PATCH .../{appId}/accept\|reject`                     |
+| 예산/정산   | `POST\|GET /api/v1/trips/{id}/expenses` · `GET .../budget`(요약) · `GET .../settlement`(정산)             |
+| 알림        | `GET /api/v1/notifications` · `GET /unread-count` · `PATCH /{id}/read` · `PATCH /read-all`                |
+| 채팅        | `GET /api/v1/chat/rooms` · `GET\|POST /rooms/{roomId}/messages` · WS `/ws` → `/topic/chat.rooms.{roomId}` |
 
 > 전체 스펙은 서버 기동 후 **Swagger UI**(`/swagger-ui`)에서 확인.
 
@@ -199,15 +199,15 @@ com.tripplannerz
 - 도메인을 추가할 때마다 **엔티티 매핑과 마이그레이션 DDL을 1:1로 정렬**했고, `validate`가 불일치를 기동 시점에 잡아내는 **안전망**으로 동작.
 - 마이그레이션은 도메인 추가 순서대로 누적:
 
-  | 버전 | 내용 | | 버전 | 내용 |
-  | --- | --- | --- | --- | --- |
-  | `V1` | baseline | | `V8` | expense_share |
-  | `V2` | member | | `V9` | trip_item **좌표 추가(alter)** |
-  | `V3` | trip | | `V10` | notification |
-  | `V4` | trip_item | | `V11` | chat_room |
-  | `V5` | companion | | `V12` | chat_room_member |
-  | `V6` | companion_application | | `V13` | chat_message |
-  | `V7` | expense | | | |
+  | 버전 | 내용                  |     | 버전  | 내용                           |
+  | ---- | --------------------- | --- | ----- | ------------------------------ |
+  | `V1` | baseline              |     | `V8`  | expense_share                  |
+  | `V2` | member                |     | `V9`  | trip_item **좌표 추가(alter)** |
+  | `V3` | trip                  |     | `V10` | notification                   |
+  | `V4` | trip_item             |     | `V11` | chat_room                      |
+  | `V5` | companion             |     | `V12` | chat_room_member               |
+  | `V6` | companion_application |     | `V13` | chat_message                   |
+  | `V7` | expense               |     |       |                                |
 
 - 컬럼명은 Spring **물리 네이밍(camelCase → snake_case)** 에 맞춰 작성, 시간은 **UTC `timestamptz`**, 삭제 전파는 `on delete cascade`/`set null`로 명시.
 
@@ -237,13 +237,13 @@ com.tripplannerz
 
 ### 9.6 마이그레이션 중 해결한 함정 (트러블슈팅)
 
-| 상황 | 원인 | 해결 |
-| --- | --- | --- |
-| 컨트롤러 전역 컴파일 실패 | record 컴포넌트 접근자 `success()` 와 정적 팩터리 `success()` **시그니처 충돌** | 팩터리를 `onSuccess`/`onSuccessEmpty`/`onFailure`로 개명 |
-| `validate` 스키마 불일치 위험 | `@Lob String` → Postgres `oid` 매핑 (DDL은 `text`) | `@Column(columnDefinition = "text")`로 정렬 |
-| 응답 boolean 필드 매핑 누락 | MapStruct 프로퍼티명 규칙(`isRead` ↔ `read`) 불일치 | 해당 응답은 서비스에서 **명시적으로 조립** |
-| 토큰 빌더 컴파일 오류 | `JWT.create()` 반환 타입 오인(`JWT.Builder`) | `JWTCreator.Builder`로 수정 |
-| Java 21/Boot 3.5 빌드 불가 | Gradle Wrapper가 레거시 `7.6.1` | Wrapper를 `8.14`로 갱신(래퍼 jar 재사용) |
+| 상황                          | 원인                                                                            | 해결                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| 컨트롤러 전역 컴파일 실패     | record 컴포넌트 접근자 `success()` 와 정적 팩터리 `success()` **시그니처 충돌** | 팩터리를 `onSuccess`/`onSuccessEmpty`/`onFailure`로 개명 |
+| `validate` 스키마 불일치 위험 | `@Lob String` → Postgres `oid` 매핑 (DDL은 `text`)                              | `@Column(columnDefinition = "text")`로 정렬              |
+| 응답 boolean 필드 매핑 누락   | MapStruct 프로퍼티명 규칙(`isRead` ↔ `read`) 불일치                             | 해당 응답은 서비스에서 **명시적으로 조립**               |
+| 토큰 빌더 컴파일 오류         | `JWT.create()` 반환 타입 오인(`JWT.Builder`)                                    | `JWTCreator.Builder`로 수정                              |
+| Java 21/Boot 3.5 빌드 불가    | Gradle Wrapper가 레거시 `7.6.1`                                                 | Wrapper를 `8.14`로 갱신(래퍼 jar 재사용)                 |
 
 ## 10. 프로젝트 구조
 
@@ -299,7 +299,8 @@ cd server
 ## 12. 품질 · 테스트 · CI/CD
 
 - **프론트**: Jest + Testing Library · Playwright(E2E) · MSW · Storybook + Chromatic
-- **백엔드**: JUnit 5 · 순수 단위 테스트(`RouteOptimizer` 등) · `@SpringBootTest` + **Testcontainers**(`@Tag("integration")`으로 분리)
+- **백엔드**: JUnit 5 · 순수 단위 테스트(`RouteOptimizer` 등)
+  · `@SpringBootTest` + **Testcontainers**(`@Tag("integration")`으로 분리)
 - **CI (CircleCI)** — `.circleci/config.yml`
   - `frontend`: pnpm install → `lint` → `typecheck` → `test` → `build`
   - `backend`: `./gradlew build` — **전체 컴파일 + 단위 테스트**(Docker 불필요, 통합 테스트는 별도 실행)
@@ -310,18 +311,18 @@ cd server
 
 ### 무엇을, 왜 바꿨나
 
-| 영역 | 2023 (Legacy) | 2026 (Rewrite) | 이유 |
-| --- | --- | --- | --- |
-| FE 프레임워크 | CRA (webpack) | Next.js 16 App Router | SSR/BFF · 성능 · 유지보수 |
-| 언어 | JS / Java 17 | TypeScript / **Java 21** | 타입 안정성 · 최신 언어 기능 |
-| 저장소 | 단일 레포 | Turborepo 모노레포 | 앱/디자인시스템 분리 |
-| BE 프레임워크 | Spring Boot 3.0.5 | **Spring Boot 3.5** + Gradle KTS | 최신 · 보안 패치 · 타입 안전 빌드 |
-| BE 구조 | 단일 패키지 | **Package-by-Feature** | 도메인 경계 · 확장성 |
-| 스키마 관리 | `ddl-auto: create` | **Flyway + validate** | 재현 가능 · 안전한 마이그레이션 |
-| 인증 | JWT(단순) | JWT + **Redis refresh 회전** | 탈취 내성 · stateless |
-| 문서/테스트 | 없음 / 빈약 | springdoc · **Testcontainers** | 계약 · 실제에 가까운 검증 |
-| CI/CD | Travis + DockerHub + EB | **CircleCI**(front/back 분리) | 죽은 파이프라인 정리 |
-| 시크릿 | 평문 커밋 | **전부 ENV 주입** | 보안 |
+| 영역          | 2023 (Legacy)           | 2026 (Rewrite)                   | 이유                              |
+| ------------- | ----------------------- | -------------------------------- | --------------------------------- |
+| FE 프레임워크 | CRA (webpack)           | Next.js 16 App Router            | SSR/BFF · 성능 · 유지보수         |
+| 언어          | JS / Java 17            | TypeScript / **Java 21**         | 타입 안정성 · 최신 언어 기능      |
+| 저장소        | 단일 레포               | Turborepo 모노레포               | 앱/디자인시스템 분리              |
+| BE 프레임워크 | Spring Boot 3.0.5       | **Spring Boot 3.5** + Gradle KTS | 최신 · 보안 패치 · 타입 안전 빌드 |
+| BE 구조       | 단일 패키지             | **Package-by-Feature**           | 도메인 경계 · 확장성              |
+| 스키마 관리   | `ddl-auto: create`      | **Flyway + validate**            | 재현 가능 · 안전한 마이그레이션   |
+| 인증          | JWT(단순)               | JWT + **Redis refresh 회전**     | 탈취 내성 · stateless             |
+| 문서/테스트   | 없음 / 빈약             | springdoc · **Testcontainers**   | 계약 · 실제에 가까운 검증         |
+| CI/CD         | Travis + DockerHub + EB | **CircleCI**(front/back 분리)    | 죽은 파이프라인 정리              |
+| 시크릿        | 평문 커밋               | **전부 ENV 주입**                | 보안                              |
 
 ### 구현 현황
 

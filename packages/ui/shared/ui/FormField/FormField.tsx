@@ -25,9 +25,12 @@ export const FormField = ({
   children,
 }: FormFieldProps) => (
   <div className={cn('flex flex-col gap-1.5', className)}>
-    <label htmlFor={htmlFor} className="text-l500-14 font-medium text-neutral-700">
+    <label
+      htmlFor={htmlFor}
+      className="text-l500-14 font-medium text-neutral-700"
+    >
       {label}
-      {required && <span className="ml-0.5 text-error-500">*</span>}
+      {required && <span className="text-error-500 ml-0.5">*</span>}
     </label>
     {children}
     {error ? (

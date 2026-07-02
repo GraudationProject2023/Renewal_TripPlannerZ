@@ -30,7 +30,9 @@ export const DialogOverlay = forwardRef<
 ))
 DialogOverlay.displayName = 'DialogOverlay'
 
-type DialogContentProps = ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+type DialogContentProps = ComponentPropsWithoutRef<
+  typeof DialogPrimitive.Content
+> & {
   size?: 'sm' | 'md' | 'lg'
   hideCloseButton?: boolean
 }
@@ -48,7 +50,7 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col rounded-card border border-neutral-200 bg-neutral-0 p-6 shadow-200 focus:outline-none',
+          'rounded-card bg-neutral-0 shadow-200 fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col border border-neutral-200 p-6 focus:outline-none',
           'max-h-[calc(100vh-2rem)] overflow-y-auto',
           'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -60,7 +62,7 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
         {children}
         {!hideCloseButton && (
           <DialogPrimitive.Close
-            className="absolute right-4 top-4 rounded-md p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+            className="focus-visible:ring-primary-400 absolute top-4 right-4 rounded-md p-1 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:ring-2 focus-visible:outline-none"
             aria-label="닫기"
           >
             <X className="h-4 w-4" />
@@ -72,12 +74,18 @@ export const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>(
 )
 DialogContent.displayName = 'DialogContent'
 
-export const DialogHeader = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
+export const DialogHeader = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) => (
   <div className={cn('flex flex-col gap-1.5 pr-8', className)} {...props} />
 )
 DialogHeader.displayName = 'DialogHeader'
 
-export const DialogFooter = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
+export const DialogFooter = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) => (
   <div className={cn('mt-2 flex justify-end gap-2', className)} {...props} />
 )
 DialogFooter.displayName = 'DialogFooter'

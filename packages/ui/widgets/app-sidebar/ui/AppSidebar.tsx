@@ -10,6 +10,7 @@ import {
   FiUsers,
 } from 'react-icons/fi'
 import type { IconType } from 'react-icons'
+import { useUnreadCount } from '../../../entities/notification'
 
 interface NavItem {
   href: string
@@ -28,6 +29,8 @@ const NAV_ITEMS: NavItem[] = [
 
 export const AppSidebar = () => {
   const [path, setPath] = useState('/')
+  const { data: unread } = useUnreadCount()
+  const unreadCount = unread?.unreadCount ?? 0
 
   useEffect(() => {
     setPath(window.location.pathname)
@@ -57,6 +60,11 @@ export const AppSidebar = () => {
                 className={active ? 'text-primary-600' : 'text-neutral-400'}
               />
               {label}
+              {href === '/notifications' && unreadCount > 0 && (
+                <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary-600 px-1.5 py-0.5 text-l500-12 font-semibold text-white">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </a>
           )
         })}

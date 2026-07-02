@@ -29,7 +29,11 @@ export const Alert = ({
   children,
   ...props
 }: AlertProps) => (
-  <div role="alert" className={cn(alertVariants({ variant, className }))} {...props}>
+  <div
+    role="alert"
+    className={cn(alertVariants({ variant, className }))}
+    {...props}
+  >
     <div className="flex items-start gap-3">
       {icon && <span className="mt-0.5 shrink-0">{icon}</span>}
       <div className="min-w-0 flex-1">
