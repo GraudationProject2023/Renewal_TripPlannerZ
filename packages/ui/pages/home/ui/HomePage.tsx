@@ -1,52 +1,46 @@
 'use client'
-import { useEffect, useState } from 'react'
 import { useMe } from '../../../entities/user'
-import { getAccessToken } from '../../../shared/lib/utils/api'
-import { AppHeader } from '../../../widgets/app-header'
+import { DashboardShell } from '../../../widgets/dashboard-shell'
 
-/** 인증 가드: 토큰이 없으면 /login으로 보낸다(클라이언트 사이드). */
+interface QuickLink {
+  href: string
+  emoji: string
+  title: string
+  desc: string
+}
+
+const QUICK_LINKS: QuickLink[] = [
+  { href: '/trips', emoji: '🗺️', title: '여행 일정', desc: '일정을 만들고 동선을 정리하세요.' },
+  { href: '/companions', emoji: '🤝', title: '동행 찾기', desc: '함께 갈 사람을 모집·지원하세요.' },
+  { href: '/budget', emoji: '💸', title: '예산·정산', desc: '지출을 기록하고 N빵 정산하세요.' },
+]
+
 export const HomePage = () => {
-  const [authed, setAuthed] = useState(false)
   const { data: user } = useMe()
 
-  useEffect(() => {
-    if (getAccessToken()) {
-      setAuthed(true)
-    } else {
-      window.location.replace('/login')
-    }
-  }, [])
-
-  if (!authed) return null
-
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <AppHeader />
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <h1 className="text-h700-24 font-bold text-neutral-900">
-          안녕하세요{user ? `, ${user.nickname}님` : ''} 👋
-        </h1>
-        <p className="mt-2 text-l500-14 text-neutral-500">
-          여행 일정을 만들고 동행을 찾아보세요.
-        </p>
+    <DashboardShell>
+      <h1 className="text-h700-24 font-bold text-neutral-900">
+        안녕하세요{user ? `, ${user.nickname}님` : ''} 👋
+      </h1>
+      <p className="mt-2 text-l500-14 text-neutral-500">
+        여행 일정을 만들고 동행을 찾아보세요.
+      </p>
 
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {QUICK_LINKS.map(({ href, emoji, title, desc }) => (
           <a
-            href="/trips"
+            key={href}
+            href={href}
             className="rounded-card border border-neutral-200 bg-neutral-0 p-5 shadow-50 transition-colors hover:border-primary-300"
           >
-            <p className="text-t600-16 font-semibold text-neutral-900">🗺️ 내 여행 일정</p>
-            <p className="mt-1 text-l500-12 text-neutral-500">일정을 만들고 동선을 정리하세요.</p>
+            <p className="text-t600-16 font-semibold text-neutral-900">
+              {emoji} {title}
+            </p>
+            <p className="mt-1 text-l500-12 text-neutral-500">{desc}</p>
           </a>
-          <a
-            href="/companions"
-            className="rounded-card border border-neutral-200 bg-neutral-0 p-5 shadow-50 transition-colors hover:border-primary-300"
-          >
-            <p className="text-t600-16 font-semibold text-neutral-900">🤝 동행 찾기</p>
-            <p className="mt-1 text-l500-12 text-neutral-500">함께 갈 사람을 모집·지원하세요.</p>
-          </a>
-        </div>
-      </main>
-    </div>
+        ))}
+      </div>
+    </DashboardShell>
   )
 }
