@@ -1,3 +1,4 @@
+import { Luggage, Plus, SearchX } from 'lucide-react'
 import { Button } from '../../../shared/ui'
 
 type TripListEmptyProps = {
@@ -10,9 +11,7 @@ export const TripListEmpty = ({ variant, onCreate, onReset }: TripListEmptyProps
   if (variant === 'no-trips') {
     return (
       <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-neutral-300 bg-neutral-0 px-6 py-16 text-center">
-        <span className="text-4xl" aria-hidden>
-          🧳
-        </span>
+        <Luggage className="h-10 w-10 text-neutral-400" aria-hidden />
         <h3 className="mt-4 text-t600-16 font-semibold text-neutral-900">
           아직 여행 일정이 없습니다
         </h3>
@@ -20,8 +19,8 @@ export const TripListEmpty = ({ variant, onCreate, onReset }: TripListEmptyProps
           첫 여행을 만들고 일자별 동선을 정리해 보세요.
         </p>
         {onCreate && (
-          <Button size="lg" className="mt-6" onClick={onCreate}>
-            + 새 여행 만들기
+          <Button size="lg" className="mt-6" onClick={onCreate} icon={<Plus className="h-4 w-4" />}>
+            새 여행 만들기
           </Button>
         )}
       </div>
@@ -30,9 +29,7 @@ export const TripListEmpty = ({ variant, onCreate, onReset }: TripListEmptyProps
 
   return (
     <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-neutral-300 bg-neutral-0 px-6 py-12 text-center">
-      <span className="text-3xl" aria-hidden>
-        🔎
-      </span>
+      <SearchX className="h-8 w-8 text-neutral-400" aria-hidden />
       <h3 className="mt-3 text-t600-16 font-semibold text-neutral-900">
         조건에 맞는 여행이 없습니다
       </h3>

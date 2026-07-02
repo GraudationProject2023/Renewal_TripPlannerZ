@@ -1,7 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import { Alert, Button, Card } from '../../../shared/ui'
 import {
   useCompanionApplications,
   type Companion,
@@ -32,7 +32,7 @@ export const CompanionApplications = ({ companion }: CompanionApplicationsProps)
   const canDecide = companion.status === 'RECRUITING'
 
   return (
-    <section className="rounded-card border border-neutral-200 bg-neutral-0 p-6 shadow-50">
+    <Card className="p-6">
       <header className="flex items-center justify-between">
         <div>
           <h2 className="text-t600-16 font-semibold text-neutral-900">
@@ -54,8 +54,8 @@ export const CompanionApplications = ({ companion }: CompanionApplicationsProps)
           ))}
         </div>
       ) : isError ? (
-        <div className="mt-5 rounded-lg border border-error-200 bg-error-50 p-4 text-center">
-          <p className="text-l500-14 text-error-700">
+        <Alert variant="error" className="mt-5">
+          <p>
             {error instanceof ApiRequestError
               ? error.message
               : '지원자 목록을 불러오지 못했습니다.'}
@@ -68,7 +68,7 @@ export const CompanionApplications = ({ companion }: CompanionApplicationsProps)
           >
             다시 시도
           </Button>
-        </div>
+        </Alert>
       ) : applications.length === 0 ? (
         <p className="mt-5 rounded-lg border border-dashed border-neutral-300 py-10 text-center text-l500-14 text-neutral-500">
           아직 지원자가 없습니다.
@@ -87,6 +87,6 @@ export const CompanionApplications = ({ companion }: CompanionApplicationsProps)
           ))}
         </div>
       )}
-    </section>
+    </Card>
   )
 }

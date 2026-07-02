@@ -1,7 +1,8 @@
 'use client'
+import { Plus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import { Alert, Button } from '../../../shared/ui'
 import { TripCard, useMyTrips, type TripSummary } from '../../../entities/trip'
 import { TripCreateDialog } from '../../../features/trip-create'
 import { TripListEmpty } from './TripListEmpty'
@@ -53,8 +54,12 @@ export const TripListSection = () => {
             )}
           </p>
         </div>
-        <Button size="lg" onClick={() => setDialogOpen(true)}>
-          + 새 여행 만들기
+        <Button
+          size="lg"
+          onClick={() => setDialogOpen(true)}
+          icon={<Plus className="h-4 w-4" />}
+        >
+          새 여행 만들기
         </Button>
       </header>
 
@@ -68,25 +73,22 @@ export const TripListSection = () => {
       {isLoading ? (
         <TripListSkeleton />
       ) : isError ? (
-        <div className="flex flex-col items-center justify-center rounded-card border border-error-200 bg-error-50 px-6 py-12 text-center">
-          <p className="text-t600-16 font-semibold text-error-700">
-            여행 목록을 불러오지 못했습니다
-          </p>
-          <p className="mt-1 text-l500-14 text-error-600">
+        <Alert variant="error" title="여행 목록을 불러오지 못했습니다">
+          <p>
             {error instanceof ApiRequestError
               ? error.message
               : '잠시 후 다시 시도해 주세요.'}
           </p>
           <Button
             variant="outlined-secondary"
-            size="md"
-            className="mt-4"
+            size="sm"
+            className="mt-3"
             onClick={() => refetch()}
             disabled={isFetching}
           >
             {isFetching ? '재시도 중…' : '다시 시도'}
           </Button>
-        </div>
+        </Alert>
       ) : trips.length === 0 ? (
         <TripListEmpty variant="no-trips" onCreate={() => setDialogOpen(true)} />
       ) : filtered.length === 0 ? (

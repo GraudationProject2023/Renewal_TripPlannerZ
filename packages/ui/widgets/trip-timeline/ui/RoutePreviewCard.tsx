@@ -1,4 +1,5 @@
 'use client'
+import { Sparkles } from 'lucide-react'
 import { Button } from '../../../shared/ui'
 import type { RouteResponse } from '../../../entities/trip'
 
@@ -17,13 +18,16 @@ export const RoutePreviewCard = ({
 }: RoutePreviewCardProps) => (
   <div className="rounded-card border border-primary-200 bg-primary-50 p-4">
     <div className="flex items-start justify-between gap-3">
-      <div>
-        <p className="text-t600-16 font-semibold text-primary-700">
-          ✨ {preview.dayNumber}일차 추천 동선
-        </p>
-        <p className="mt-1 text-l500-12 text-primary-700/80">
-          총 이동 거리 약 {preview.totalDistanceKm.toFixed(1)}km
-        </p>
+      <div className="flex items-start gap-2">
+        <Sparkles className="mt-0.5 h-5 w-5 text-primary-600" aria-hidden />
+        <div>
+          <p className="text-t600-16 font-semibold text-primary-700">
+            {preview.dayNumber}일차 추천 동선
+          </p>
+          <p className="mt-1 text-l500-12 text-primary-700/80">
+            총 이동 거리 약 {preview.totalDistanceKm.toFixed(1)}km
+          </p>
+        </div>
       </div>
       <div className="flex gap-2">
         <Button variant="outlined-secondary" size="sm" onClick={onDismiss} disabled={isApplying}>

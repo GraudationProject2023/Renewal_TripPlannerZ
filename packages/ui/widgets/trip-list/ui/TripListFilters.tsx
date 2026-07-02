@@ -1,5 +1,6 @@
 'use client'
-import { clsx } from 'clsx'
+import { Search } from 'lucide-react'
+import { cn, Input } from '../../../shared/ui'
 import type { TripVisibility } from '../../../entities/trip'
 
 export type VisibilityFilter = TripVisibility | 'ALL'
@@ -30,8 +31,8 @@ export const TripListFilters = ({
           key={value}
           type="button"
           onClick={() => onVisibilityChange(value)}
-          className={clsx(
-            'rounded-full border px-3 py-1.5 text-l500-14 transition-colors',
+          className={cn(
+            'rounded-full border px-3 py-1.5 text-l500-14 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
             visibility === value
               ? 'border-primary-600 bg-primary-50 text-primary-700'
               : 'border-neutral-200 bg-neutral-0 text-neutral-600 hover:border-neutral-300',
@@ -43,17 +44,18 @@ export const TripListFilters = ({
     </div>
 
     <div className="relative w-full md:w-72">
-      <input
+      <Search
+        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
+        aria-hidden
+      />
+      <Input
         type="search"
         value={keyword}
         onChange={(e) => onKeywordChange(e.target.value)}
         placeholder="제목·목적지 검색"
-        className="w-full rounded-lg border border-neutral-300 bg-neutral-0 px-3 py-2 pr-9 text-l500-14 outline-none focus:border-primary-600"
+        className="pl-9"
         aria-label="여행 검색"
       />
-      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
-        🔍
-      </span>
     </div>
   </div>
 )

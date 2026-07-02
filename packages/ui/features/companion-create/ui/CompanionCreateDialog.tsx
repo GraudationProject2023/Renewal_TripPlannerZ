@@ -1,9 +1,19 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  FormField,
+  Input,
+  Textarea,
+} from '../../../shared/ui'
 import { useCreateCompanion } from '../model/mutations'
 import { companionCreateSchema, type CompanionCreateInputSchema } from '../model/schema'
 
@@ -12,11 +22,6 @@ type CompanionCreateDialogProps = {
   onClose: () => void
   onCreated?: (companionId: number) => void
 }
-
-const fieldClass =
-  'w-full rounded-lg border border-neutral-300 px-3 py-2 text-l500-14 outline-none transition-colors focus:border-primary-600'
-const labelClass = 'text-l500-14 text-neutral-700'
-const errorClass = 'text-l500-12 text-error-600'
 
 const DEFAULT_VALUES: CompanionCreateInputSchema = {
   title: '',
@@ -45,24 +50,6 @@ export const CompanionCreateDialog = ({
   })
   const create = useCreateCompanion()
 
-  useEffect(() => {
-    if (open) {
-      reset(DEFAULT_VALUES)
-      create.reset()
-    }
-  }, [open, reset, create])
-
-  useEffect(() => {
-    if (!open) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
-
-  if (!open) return null
-
   const onSubmit = handleSubmit((values) => {
     create.mutate(values, {
       onSuccess: (companion) => {
@@ -73,164 +60,142 @@ export const CompanionCreateDialog = ({
   })
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose()
+        else {
+          reset(DEFAULT_VALUES)
+          create.reset()
+        }
+      }}
     >
-      <div
-        className="w-full max-w-lg rounded-card bg-neutral-0 p-6 shadow-200"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between">
-          <h2 className="text-h700-24 font-bold text-neutral-900">동행 모집글 작성</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md p-1 text-neutral-500 hover:bg-neutral-100"
-            aria-label="닫기"
-          >
-            ✕
-          </button>
-        </div>
+      <DialogContent size="lg">
+        <DialogHeader>
+          <DialogTitle>동행 모집글 작성</DialogTitle>
+        </DialogHeader>
 
         <form className="mt-6 flex flex-col gap-4" onSubmit={onSubmit}>
-          <div className="flex flex-col gap-1">
-            <label className={labelClass} htmlFor="c-title">
-              제목
-            </label>
-            <input
+          <FormField htmlFor="c-title" label="제목" required error={errors.title?.message}>
+            <Input
               id="c-title"
-              type="text"
               placeholder="예: 6월 오사카 3박 4일 같이 갈 분!"
-              className={fieldClass}
+              invalid={Boolean(errors.title)}
               {...register('title')}
             />
-            {errors.title && <p className={errorClass}>{errors.title.message}</p>}
-          </div>
+          </FormField>
 
-          <div className="flex flex-col gap-1">
-            <label className={labelClass} htmlFor="c-destination">
-              목적지
-            </label>
-            <input
+          <FormField
+            htmlFor="c-destination"
+            label="목적지"
+            required
+            error={errors.destination?.message}
+          >
+            <Input
               id="c-destination"
-              type="text"
               placeholder="예: 오사카"
-              className={fieldClass}
+              invalid={Boolean(errors.destination)}
               {...register('destination')}
             />
-            {errors.destination && (
-              <p className={errorClass}>{errors.destination.message}</p>
-            )}
-          </div>
+          </FormField>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass} htmlFor="c-start">
-                시작일
-              </label>
-              <input
+            <FormField
+              htmlFor="c-start"
+              label="시작일"
+              required
+              error={errors.startDate?.message}
+            >
+              <Input
                 id="c-start"
                 type="date"
-                className={fieldClass}
+                invalid={Boolean(errors.startDate)}
                 {...register('startDate')}
               />
-              {errors.startDate && (
-                <p className={errorClass}>{errors.startDate.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass} htmlFor="c-end">
-                종료일
-              </label>
-              <input
+            </FormField>
+            <FormField
+              htmlFor="c-end"
+              label="종료일"
+              required
+              error={errors.endDate?.message}
+            >
+              <Input
                 id="c-end"
                 type="date"
-                className={fieldClass}
+                invalid={Boolean(errors.endDate)}
                 {...register('endDate')}
               />
-              {errors.endDate && (
-                <p className={errorClass}>{errors.endDate.message}</p>
-              )}
-            </div>
+            </FormField>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
-              <label className={labelClass} htmlFor="c-capacity">
-                모집 인원
-              </label>
-              <input
+            <FormField
+              htmlFor="c-capacity"
+              label="모집 인원"
+              required
+              error={errors.capacity?.message}
+            >
+              <Input
                 id="c-capacity"
                 type="number"
                 min={2}
                 step={1}
-                className={fieldClass}
+                invalid={Boolean(errors.capacity)}
                 {...register('capacity', { valueAsNumber: true })}
               />
-              {errors.capacity && (
-                <p className={errorClass}>{errors.capacity.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className={labelClass} htmlFor="c-budget">
-                예상 예산 (원)
-              </label>
-              <input
+            </FormField>
+            <FormField
+              htmlFor="c-budget"
+              label="예상 예산 (원)"
+              error={errors.budget?.message}
+            >
+              <Input
                 id="c-budget"
                 type="number"
                 min={0}
                 step={10000}
                 placeholder="선택"
-                className={fieldClass}
+                invalid={Boolean(errors.budget)}
                 {...register('budget', {
                   setValueAs: (v) => (v === '' || v === null ? null : Number(v)),
                 })}
               />
-              {errors.budget && <p className={errorClass}>{errors.budget.message}</p>}
-            </div>
+            </FormField>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className={labelClass} htmlFor="c-content">
-              상세 내용
-            </label>
-            <textarea
+          <FormField htmlFor="c-content" label="상세 내용" error={errors.content?.message}>
+            <Textarea
               id="c-content"
               rows={5}
               placeholder="일정, 선호 성향, 연락 방식 등을 자유롭게 적어주세요."
-              className={fieldClass}
+              invalid={Boolean(errors.content)}
               {...register('content')}
             />
-            {errors.content && <p className={errorClass}>{errors.content.message}</p>}
-          </div>
+          </FormField>
 
           {create.isError && (
-            <p className={errorClass}>
+            <Alert variant="error">
               {create.error instanceof ApiRequestError
                 ? create.error.message
                 : '모집글 작성에 실패했습니다.'}
-            </p>
+            </Alert>
           )}
 
-          <div className="mt-2 flex justify-end gap-2">
+          <DialogFooter>
             <Button
               type="button"
               variant="outlined-secondary"
-              size="md"
               onClick={onClose}
               disabled={create.isPending}
             >
               취소
             </Button>
-            <Button type="submit" size="md" disabled={create.isPending}>
+            <Button type="submit" disabled={create.isPending}>
               {create.isPending ? '등록 중…' : '등록'}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

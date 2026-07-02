@@ -1,7 +1,8 @@
 'use client'
+import { Handshake, Plus, Search, SearchX } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import { Alert, Button, Input } from '../../../shared/ui'
 import {
   CompanionCard,
   useMyCompanions,
@@ -50,49 +51,51 @@ export const CompanionListSection = () => {
             )}
           </p>
         </div>
-        <Button size="lg" onClick={() => setDialogOpen(true)}>
-          + 모집글 작성
+        <Button
+          size="lg"
+          onClick={() => setDialogOpen(true)}
+          icon={<Plus className="h-4 w-4" />}
+        >
+          모집글 작성
         </Button>
       </header>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <CompanionScopeTabs value={scope} onChange={setScope} />
         <div className="relative w-full md:w-72">
-          <input
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
+            aria-hidden
+          />
+          <Input
             type="search"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="제목·목적지 검색"
-            className="w-full rounded-lg border border-neutral-300 bg-neutral-0 px-3 py-2 pr-9 text-l500-14 outline-none focus:border-primary-600"
+            className="pl-9"
             aria-label="모집 검색"
           />
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400">
-            🔍
-          </span>
         </div>
       </div>
 
       {active.isLoading ? (
         <CompanionListSkeleton />
       ) : active.isError ? (
-        <div className="rounded-card border border-error-200 bg-error-50 p-6 text-center">
-          <p className="text-t600-16 font-semibold text-error-700">
-            목록을 불러오지 못했습니다
-          </p>
-          <p className="mt-1 text-l500-14 text-error-600">
+        <Alert variant="error" title="목록을 불러오지 못했습니다">
+          <p>
             {active.error instanceof ApiRequestError
               ? active.error.message
               : '잠시 후 다시 시도해 주세요.'}
           </p>
           <Button
             variant="outlined-secondary"
-            size="md"
-            className="mt-4"
+            size="sm"
+            className="mt-3"
             onClick={() => active.refetch()}
           >
             다시 시도
           </Button>
-        </div>
+        </Alert>
       ) : filtered.length === 0 ? (
         <CompanionListEmpty
           scope={scope}
@@ -148,9 +151,7 @@ const CompanionListEmpty = ({
   if (hasKeyword) {
     return (
       <div className="rounded-card border border-dashed border-neutral-300 bg-neutral-0 p-12 text-center">
-        <span className="text-3xl" aria-hidden>
-          🔎
-        </span>
+        <SearchX className="mx-auto h-8 w-8 text-neutral-400" aria-hidden />
         <p className="mt-3 text-t600-16 font-semibold text-neutral-900">
           검색 결과가 없습니다
         </p>
@@ -167,9 +168,7 @@ const CompanionListEmpty = ({
   }
   return (
     <div className="rounded-card border border-dashed border-neutral-300 bg-neutral-0 p-16 text-center">
-      <span className="text-4xl" aria-hidden>
-        🤝
-      </span>
+      <Handshake className="mx-auto h-10 w-10 text-neutral-400" aria-hidden />
       <p className="mt-4 text-t600-16 font-semibold text-neutral-900">
         {scope === 'mine' ? '작성한 모집글이 없습니다' : '모집 중인 동행이 없습니다'}
       </p>
@@ -178,8 +177,13 @@ const CompanionListEmpty = ({
           ? '함께 여행할 사람을 모집해 보세요.'
           : '첫 번째 모집글을 등록해 동행을 만들어보세요.'}
       </p>
-      <Button size="lg" className="mt-6" onClick={onCreate}>
-        + 모집글 작성
+      <Button
+        size="lg"
+        className="mt-6"
+        onClick={onCreate}
+        icon={<Plus className="h-4 w-4" />}
+      >
+        모집글 작성
       </Button>
     </div>
   )

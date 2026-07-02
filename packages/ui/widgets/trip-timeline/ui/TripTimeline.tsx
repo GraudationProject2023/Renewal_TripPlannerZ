@@ -1,9 +1,10 @@
 'use client'
+import { MapPin, Plus, Sparkles } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import { Alert, Button } from '../../../shared/ui'
 import {
   countTripDays,
   useTripItems,
@@ -114,11 +115,16 @@ export const TripTimeline = ({ trip }: TripTimelineProps) => {
             size="md"
             onClick={() => preview.mutate(activeDay)}
             disabled={!canOptimize || preview.isPending}
+            icon={<Sparkles className="h-4 w-4" />}
           >
             {preview.isPending ? '경로 계산 중…' : '동선 최적화'}
           </Button>
-          <Button size="md" onClick={() => setAddOpen(true)}>
-            + 장소 추가
+          <Button
+            size="md"
+            onClick={() => setAddOpen(true)}
+            icon={<Plus className="h-4 w-4" />}
+          >
+            장소 추가
           </Button>
         </div>
       </div>
@@ -135,47 +141,47 @@ export const TripTimeline = ({ trip }: TripTimelineProps) => {
       )}
 
       {preview.isError && (
-        <p className="text-l500-12 text-error-600">
+        <Alert variant="error">
           {preview.error instanceof ApiRequestError
             ? preview.error.message
             : '경로를 계산하지 못했습니다.'}
-        </p>
+        </Alert>
       )}
 
       {isLoading ? (
         <TimelineSkeleton />
       ) : isError ? (
-        <div className="rounded-card border border-error-200 bg-error-50 p-6 text-center">
-          <p className="text-t600-16 font-semibold text-error-700">
-            일정 항목을 불러오지 못했습니다
-          </p>
-          <p className="mt-1 text-l500-14 text-error-600">
+        <Alert variant="error" title="일정 항목을 불러오지 못했습니다">
+          <p>
             {error instanceof ApiRequestError
               ? error.message
               : '잠시 후 다시 시도해 주세요.'}
           </p>
           <Button
             variant="outlined-secondary"
-            size="md"
-            className="mt-4"
+            size="sm"
+            className="mt-3"
             onClick={() => refetch()}
           >
             다시 시도
           </Button>
-        </div>
+        </Alert>
       ) : localDayItems.length === 0 ? (
         <div className="rounded-card border border-dashed border-neutral-300 bg-neutral-0 p-10 text-center">
-          <span className="text-3xl" aria-hidden>
-            📍
-          </span>
+          <MapPin className="mx-auto h-10 w-10 text-neutral-400" aria-hidden />
           <p className="mt-3 text-t600-16 font-semibold text-neutral-900">
             아직 등록된 장소가 없습니다
           </p>
           <p className="mt-1 text-l500-14 text-neutral-500">
             {activeDay}일차에 갈 장소를 추가해 보세요.
           </p>
-          <Button size="lg" className="mt-6" onClick={() => setAddOpen(true)}>
-            + 첫 장소 추가
+          <Button
+            size="lg"
+            className="mt-6"
+            onClick={() => setAddOpen(true)}
+            icon={<Plus className="h-4 w-4" />}
+          >
+            첫 장소 추가
           </Button>
         </div>
       ) : (

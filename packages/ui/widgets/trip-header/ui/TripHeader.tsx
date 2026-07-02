@@ -1,4 +1,6 @@
 'use client'
+import { MapPin } from 'lucide-react'
+import { Card } from '../../../shared/ui'
 import { formatBudget, formatTripPeriod, TripVisibilityBadge } from '../../../entities/trip'
 import type { Trip } from '../../../entities/trip'
 
@@ -7,10 +9,13 @@ type TripHeaderProps = {
 }
 
 export const TripHeader = ({ trip }: TripHeaderProps) => (
-  <header className="flex flex-col gap-4 rounded-card border border-neutral-200 bg-neutral-0 p-6 shadow-50">
+  <Card className="flex flex-col gap-4 p-6">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="text-l500-14 text-neutral-500">{trip.destination}</p>
+        <p className="inline-flex items-center gap-1 text-l500-14 text-neutral-500">
+          <MapPin className="h-4 w-4" aria-hidden />
+          {trip.destination}
+        </p>
         <div className="mt-1 flex items-center gap-2">
           <h1 className="truncate text-h700-24 font-bold text-neutral-900">
             {trip.title}
@@ -34,5 +39,5 @@ export const TripHeader = ({ trip }: TripHeaderProps) => (
         </dd>
       </div>
     </dl>
-  </header>
+  </Card>
 )

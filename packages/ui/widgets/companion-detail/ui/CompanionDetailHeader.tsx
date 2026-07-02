@@ -1,5 +1,7 @@
 'use client'
+import { MapPin } from 'lucide-react'
 import { formatDateRange, formatKrw } from '../../../shared/lib'
+import { Card } from '../../../shared/ui'
 import {
   CompanionStatusBadge,
   type Companion,
@@ -14,10 +16,13 @@ export const CompanionDetailHeader = ({
   companion,
   actions,
 }: CompanionDetailHeaderProps) => (
-  <header className="flex flex-col gap-4 rounded-card border border-neutral-200 bg-neutral-0 p-6 shadow-50">
+  <Card className="flex flex-col gap-4 p-6">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="min-w-0 flex-1">
-        <p className="text-l500-14 text-neutral-500">📍 {companion.destination}</p>
+        <p className="inline-flex items-center gap-1 text-l500-14 text-neutral-500">
+          <MapPin className="h-4 w-4" aria-hidden />
+          {companion.destination}
+        </p>
         <div className="mt-1 flex items-center gap-2">
           <h1 className="truncate text-h700-24 font-bold text-neutral-900">
             {companion.title}
@@ -25,7 +30,7 @@ export const CompanionDetailHeader = ({
           <CompanionStatusBadge status={companion.status} />
         </div>
       </div>
-      {actions && <div className="flex shrink-0 gap-2">{actions}</div>}
+      {actions && <div className="flex shrink-0 items-start gap-2">{actions}</div>}
     </div>
 
     <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -48,5 +53,5 @@ export const CompanionDetailHeader = ({
         </dd>
       </div>
     </dl>
-  </header>
+  </Card>
 )

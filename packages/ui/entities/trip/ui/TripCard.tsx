@@ -1,4 +1,5 @@
-import { clsx } from 'clsx'
+import { MapPin } from 'lucide-react'
+import { cn } from '../../../shared/ui'
 import { formatTripPeriod } from '../lib/format'
 import type { TripSummary } from '../model/types'
 import { TripVisibilityBadge } from './TripVisibilityBadge'
@@ -12,7 +13,7 @@ type TripCardProps = {
 export const TripCard = ({ trip, href, className }: TripCardProps) => {
   const content = (
     <div
-      className={clsx(
+      className={cn(
         'group flex h-full flex-col justify-between rounded-card border border-neutral-200 bg-neutral-0 p-5 shadow-50 transition-all',
         href && 'hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-100',
         className,
@@ -20,7 +21,10 @@ export const TripCard = ({ trip, href, className }: TripCardProps) => {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-l500-12 text-neutral-500">{trip.destination}</p>
+          <p className="inline-flex items-center gap-1 truncate text-l500-12 text-neutral-500">
+            <MapPin className="h-3 w-3" aria-hidden />
+            {trip.destination}
+          </p>
           <h3 className="mt-1 truncate text-t600-16 font-semibold text-neutral-900">
             {trip.title}
           </h3>

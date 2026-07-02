@@ -1,5 +1,6 @@
 'use client'
 import { format, parseISO } from 'date-fns'
+import { Check, X } from 'lucide-react'
 import { Button } from '../../../shared/ui'
 import {
   ApplicationStatusBadge,
@@ -41,12 +42,18 @@ export const ApplicationRow = ({
             <Button
               variant="outlined-secondary"
               size="sm"
+              icon={<X className="h-3.5 w-3.5" />}
               onClick={onReject}
               disabled={isBusy}
             >
               거절
             </Button>
-            <Button size="sm" onClick={onAccept} disabled={isBusy}>
+            <Button
+              size="sm"
+              icon={<Check className="h-3.5 w-3.5" />}
+              onClick={onAccept}
+              disabled={isBusy}
+            >
               수락
             </Button>
           </div>

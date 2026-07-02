@@ -1,4 +1,4 @@
-import { clsx } from 'clsx'
+import { Badge } from '../../../shared/ui'
 import type { ApplicationStatus } from '../model/types'
 
 type ApplicationStatusBadgeProps = {
@@ -12,23 +12,17 @@ const LABEL: Record<ApplicationStatus, string> = {
   REJECTED: '거절됨',
 }
 
-const STYLE: Record<ApplicationStatus, string> = {
-  PENDING: 'bg-neutral-100 text-neutral-600',
-  ACCEPTED: 'bg-primary-50 text-primary-700',
-  REJECTED: 'bg-error-50 text-error-700',
+const VARIANT: Record<ApplicationStatus, 'neutral' | 'primary' | 'error'> = {
+  PENDING: 'neutral',
+  ACCEPTED: 'primary',
+  REJECTED: 'error',
 }
 
 export const ApplicationStatusBadge = ({
   status,
   className,
 }: ApplicationStatusBadgeProps) => (
-  <span
-    className={clsx(
-      'inline-flex items-center rounded-full px-2 py-0.5 text-l500-12',
-      STYLE[status],
-      className,
-    )}
-  >
+  <Badge variant={VARIANT[status]} className={className}>
     {LABEL[status]}
-  </span>
+  </Badge>
 )

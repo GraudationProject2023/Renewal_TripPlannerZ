@@ -1,6 +1,7 @@
 'use client'
+import { ArrowLeft } from 'lucide-react'
 import { ApiRequestError } from '../../../shared/api'
-import { Button } from '../../../shared/ui'
+import { Alert, Button } from '../../../shared/ui'
 import { useCompanion } from '../../../entities/companion'
 import { useMe } from '../../../entities/user'
 import { getAccessToken } from '../../../shared/lib/utils/api'
@@ -30,30 +31,28 @@ export const CompanionDetailPage = ({ companionId }: CompanionDetailPageProps) =
           href="/companions"
           className="inline-flex w-fit items-center gap-1 text-l500-14 text-neutral-500 transition-colors hover:text-neutral-800"
         >
-          ← 동행 목록으로
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          동행 목록으로
         </a>
 
         {isLoading ? (
           <DetailSkeleton />
         ) : isError || !companion ? (
-          <div className="rounded-card border border-error-200 bg-error-50 p-6 text-center">
-            <p className="text-t600-16 font-semibold text-error-700">
-              모집 정보를 불러오지 못했습니다
-            </p>
-            <p className="mt-1 text-l500-14 text-error-600">
+          <Alert variant="error" title="모집 정보를 불러오지 못했습니다">
+            <p>
               {error instanceof ApiRequestError
                 ? error.message
                 : '삭제되었거나 접근 권한이 없을 수 있습니다.'}
             </p>
             <Button
               variant="outlined-secondary"
-              size="md"
-              className="mt-4"
+              size="sm"
+              className="mt-3"
               onClick={() => refetch()}
             >
               다시 시도
             </Button>
-          </div>
+          </Alert>
         ) : (
           <>
             <CompanionDetailHeader

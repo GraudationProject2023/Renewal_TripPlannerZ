@@ -1,4 +1,5 @@
 'use client'
+import { CheckCircle2, Lock, LogIn, Send } from 'lucide-react'
 import { useState } from 'react'
 import { ApiRequestError } from '../../../shared/api'
 import { Button } from '../../../shared/ui'
@@ -29,6 +30,7 @@ export const CompanionDetailActions = ({
           <Button
             variant="outlined-secondary"
             size="md"
+            icon={<CheckCircle2 className="h-4 w-4" />}
             onClick={() => {
               if (typeof window !== 'undefined' && !window.confirm('모집을 마감할까요?')) return
               close.mutate()
@@ -53,7 +55,7 @@ export const CompanionDetailActions = ({
 
   if (!isRecruiting) {
     return (
-      <Button size="md" variant="outlined-assistive" disabled>
+      <Button size="md" variant="outlined-assistive" icon={<Lock className="h-4 w-4" />} disabled>
         마감된 모집
       </Button>
     )
@@ -61,7 +63,11 @@ export const CompanionDetailActions = ({
 
   if (!isAuthenticated) {
     return (
-      <Button size="md" onClick={() => window.location.assign('/login')}>
+      <Button
+        size="md"
+        onClick={() => window.location.assign('/login')}
+        icon={<LogIn className="h-4 w-4" />}
+      >
         로그인 후 지원하기
       </Button>
     )
@@ -69,7 +75,7 @@ export const CompanionDetailActions = ({
 
   return (
     <>
-      <Button size="md" onClick={() => setApplyOpen(true)}>
+      <Button size="md" onClick={() => setApplyOpen(true)} icon={<Send className="h-4 w-4" />}>
         지원하기
       </Button>
       <CompanionApplyDialog
