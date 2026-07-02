@@ -27,6 +27,7 @@ public enum ErrorCode {
 
     // --- Trip ---
     TRIP_NOT_FOUND(HttpStatus.NOT_FOUND, "TRIP_NOT_FOUND", "여행 일정을 찾을 수 없습니다."),
+    TRIP_INVALID_PERIOD(HttpStatus.BAD_REQUEST, "TRIP_INVALID_PERIOD", "여행 종료일은 시작일보다 빠를 수 없습니다."),
 
     // --- Companion ---
     COMPANION_NOT_FOUND(HttpStatus.NOT_FOUND, "COMPANION_NOT_FOUND", "동행 모집글을 찾을 수 없습니다.");
