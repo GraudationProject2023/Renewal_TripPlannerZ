@@ -1,0 +1,5 @@
+/* 디자인 시스템(토큰·리셋·유틸리티)을 @ui에서 가져온다. */
+@import "@ui/global.css";
+
+/* apps/web 자체 소스도 Tailwind 콘텐츠 스캔 대상에 포함 */
+@source "../";

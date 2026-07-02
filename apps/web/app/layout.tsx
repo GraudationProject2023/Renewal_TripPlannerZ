@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { AppProviders } from '@ui/app'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'TripPlannerZ',
@@ -10,7 +12,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   )
 }
