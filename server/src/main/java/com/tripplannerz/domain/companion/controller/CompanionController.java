@@ -34,23 +34,23 @@ public class CompanionController {
     public ApiResponse<CompanionResponse> create(
             @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody CompanionCreateRequest request) {
-        return ApiResponse.success(companionService.create(memberId, request));
+        return ApiResponse.onSuccess(companionService.create(memberId, request));
     }
 
     @GetMapping
     public ApiResponse<PageResponse<CompanionSummaryResponse>> getRecruiting(Pageable pageable) {
-        return ApiResponse.success(companionService.getRecruiting(pageable));
+        return ApiResponse.onSuccess(companionService.getRecruiting(pageable));
     }
 
     @GetMapping("/mine")
     public ApiResponse<PageResponse<CompanionSummaryResponse>> getMine(
             @AuthenticationPrincipal Long memberId, Pageable pageable) {
-        return ApiResponse.success(companionService.getMine(memberId, pageable));
+        return ApiResponse.onSuccess(companionService.getMine(memberId, pageable));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<CompanionResponse> get(@PathVariable Long id) {
-        return ApiResponse.success(companionService.getById(id));
+        return ApiResponse.onSuccess(companionService.getById(id));
     }
 
     @PutMapping("/{id}")
@@ -58,7 +58,7 @@ public class CompanionController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long id,
             @Valid @RequestBody CompanionUpdateRequest request) {
-        return ApiResponse.success(companionService.update(id, memberId, request));
+        return ApiResponse.onSuccess(companionService.update(id, memberId, request));
     }
 
     @PatchMapping("/{id}/close")
@@ -66,6 +66,6 @@ public class CompanionController {
     public ApiResponse<Void> close(
             @AuthenticationPrincipal Long memberId, @PathVariable Long id) {
         companionService.close(id, memberId);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 }

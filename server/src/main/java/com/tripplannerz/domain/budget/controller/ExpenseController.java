@@ -31,13 +31,13 @@ public class ExpenseController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long tripId,
             @Valid @RequestBody ExpenseCreateRequest request) {
-        return ApiResponse.success(expenseService.create(tripId, memberId, request));
+        return ApiResponse.onSuccess(expenseService.create(tripId, memberId, request));
     }
 
     @GetMapping
     public ApiResponse<List<ExpenseResponse>> list(
             @AuthenticationPrincipal Long memberId, @PathVariable Long tripId) {
-        return ApiResponse.success(expenseService.list(tripId, memberId));
+        return ApiResponse.onSuccess(expenseService.list(tripId, memberId));
     }
 
     @DeleteMapping("/{expenseId}")
@@ -47,6 +47,6 @@ public class ExpenseController {
             @PathVariable Long tripId,
             @PathVariable Long expenseId) {
         expenseService.delete(tripId, expenseId, memberId);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 }

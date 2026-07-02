@@ -26,16 +26,16 @@ public class MemberController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<MemberResponse> signUp(@Valid @RequestBody SignUpRequest request) {
-        return ApiResponse.success(memberService.signUp(request));
+        return ApiResponse.onSuccess(memberService.signUp(request));
     }
 
     @GetMapping("/me")
     public ApiResponse<MemberResponse> getMyProfile(@AuthenticationPrincipal Long memberId) {
-        return ApiResponse.success(memberService.getById(memberId));
+        return ApiResponse.onSuccess(memberService.getById(memberId));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<MemberResponse> getMember(@PathVariable Long id) {
-        return ApiResponse.success(memberService.getById(id));
+        return ApiResponse.onSuccess(memberService.getById(id));
     }
 }

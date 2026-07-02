@@ -31,13 +31,13 @@ public class CompanionApplicationController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long companionId,
             @Valid @RequestBody ApplicationCreateRequest request) {
-        return ApiResponse.success(applicationService.apply(companionId, memberId, request));
+        return ApiResponse.onSuccess(applicationService.apply(companionId, memberId, request));
     }
 
     @GetMapping
     public ApiResponse<List<ApplicationResponse>> list(
             @AuthenticationPrincipal Long memberId, @PathVariable Long companionId) {
-        return ApiResponse.success(applicationService.list(companionId, memberId));
+        return ApiResponse.onSuccess(applicationService.list(companionId, memberId));
     }
 
     @PatchMapping("/{applicationId}/accept")
@@ -45,7 +45,7 @@ public class CompanionApplicationController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long companionId,
             @PathVariable Long applicationId) {
-        return ApiResponse.success(applicationService.accept(companionId, applicationId, memberId));
+        return ApiResponse.onSuccess(applicationService.accept(companionId, applicationId, memberId));
     }
 
     @PatchMapping("/{applicationId}/reject")
@@ -53,6 +53,6 @@ public class CompanionApplicationController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long companionId,
             @PathVariable Long applicationId) {
-        return ApiResponse.success(applicationService.reject(companionId, applicationId, memberId));
+        return ApiResponse.onSuccess(applicationService.reject(companionId, applicationId, memberId));
     }
 }

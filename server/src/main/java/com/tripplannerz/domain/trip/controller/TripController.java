@@ -33,19 +33,19 @@ public class TripController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<TripResponse> create(
             @AuthenticationPrincipal Long memberId, @Valid @RequestBody TripCreateRequest request) {
-        return ApiResponse.success(tripService.create(memberId, request));
+        return ApiResponse.onSuccess(tripService.create(memberId, request));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<TripResponse> get(
             @AuthenticationPrincipal Long memberId, @PathVariable Long id) {
-        return ApiResponse.success(tripService.getReadable(id, memberId));
+        return ApiResponse.onSuccess(tripService.getReadable(id, memberId));
     }
 
     @GetMapping
     public ApiResponse<PageResponse<TripSummaryResponse>> getMine(
             @AuthenticationPrincipal Long memberId, Pageable pageable) {
-        return ApiResponse.success(tripService.getMine(memberId, pageable));
+        return ApiResponse.onSuccess(tripService.getMine(memberId, pageable));
     }
 
     @PutMapping("/{id}")
@@ -53,7 +53,7 @@ public class TripController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long id,
             @Valid @RequestBody TripUpdateRequest request) {
-        return ApiResponse.success(tripService.update(id, memberId, request));
+        return ApiResponse.onSuccess(tripService.update(id, memberId, request));
     }
 
     @DeleteMapping("/{id}")
@@ -61,6 +61,6 @@ public class TripController {
     public ApiResponse<Void> delete(
             @AuthenticationPrincipal Long memberId, @PathVariable Long id) {
         tripService.delete(id, memberId);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 }

@@ -33,13 +33,13 @@ public class TripItemController {
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long tripId,
             @Valid @RequestBody TripItemCreateRequest request) {
-        return ApiResponse.success(tripItemService.add(tripId, memberId, request));
+        return ApiResponse.onSuccess(tripItemService.add(tripId, memberId, request));
     }
 
     @GetMapping
     public ApiResponse<List<TripItemResponse>> list(
             @AuthenticationPrincipal Long memberId, @PathVariable Long tripId) {
-        return ApiResponse.success(tripItemService.list(tripId, memberId));
+        return ApiResponse.onSuccess(tripItemService.list(tripId, memberId));
     }
 
     @PutMapping("/reorder")
@@ -49,7 +49,7 @@ public class TripItemController {
             @PathVariable Long tripId,
             @Valid @RequestBody TripItemReorderRequest request) {
         tripItemService.reorder(tripId, memberId, request);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 
     @DeleteMapping("/{itemId}")
@@ -59,6 +59,6 @@ public class TripItemController {
             @PathVariable Long tripId,
             @PathVariable Long itemId) {
         tripItemService.delete(tripId, itemId, memberId);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 }

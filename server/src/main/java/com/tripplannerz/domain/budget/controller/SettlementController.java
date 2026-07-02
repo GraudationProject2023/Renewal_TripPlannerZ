@@ -20,6 +20,6 @@ public class SettlementController {
     @GetMapping
     public ApiResponse<SettlementResponse> settle(
             @AuthenticationPrincipal Long memberId, @PathVariable Long tripId) {
-        return ApiResponse.success(settlementService.settle(tripId, memberId));
+        return ApiResponse.onSuccess(settlementService.settle(tripId, memberId));
     }
 }

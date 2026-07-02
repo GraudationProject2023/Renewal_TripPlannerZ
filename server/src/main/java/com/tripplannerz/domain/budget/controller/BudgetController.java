@@ -20,6 +20,6 @@ public class BudgetController {
     @GetMapping
     public ApiResponse<BudgetSummaryResponse> summary(
             @AuthenticationPrincipal Long memberId, @PathVariable Long tripId) {
-        return ApiResponse.success(expenseService.summary(tripId, memberId));
+        return ApiResponse.onSuccess(expenseService.summary(tripId, memberId));
     }
 }

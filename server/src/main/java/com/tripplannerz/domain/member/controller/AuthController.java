@@ -24,18 +24,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ApiResponse.success(authService.login(request));
+        return ApiResponse.onSuccess(authService.login(request));
     }
 
     @PostMapping("/reissue")
     public ApiResponse<TokenResponse> reissue(@Valid @RequestBody TokenRefreshRequest request) {
-        return ApiResponse.success(authService.reissue(request.refreshToken()));
+        return ApiResponse.onSuccess(authService.reissue(request.refreshToken()));
     }
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ApiResponse<Void> logout(@AuthenticationPrincipal Long memberId) {
         authService.logout(memberId);
-        return ApiResponse.success();
+        return ApiResponse.onSuccessEmpty();
     }
 }
