@@ -9,6 +9,12 @@ export const AuthPage = () => {
           로그인하고 여행을 계획해보세요.
         </p>
         <LoginForm />
+        <p className="mt-4 text-center text-l500-12 text-neutral-500">
+          아직 계정이 없으신가요?{' '}
+          <a href="/signup" className="text-primary-600 underline">
+            회원가입
+          </a>
+        </p>
       </div>
     </main>
   )
