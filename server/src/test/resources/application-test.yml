@@ -1,0 +1,13 @@
+# 통합 테스트 프로파일. datasource/redis는 Testcontainers가 DynamicPropertySource로 주입한다.
+# jwt/flyway/jpa 설정은 application.yml(프로파일 무관)에서 상속.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    com.tripplannerz: info
+    org.testcontainers: info
+    com.github.dockerjava: warn

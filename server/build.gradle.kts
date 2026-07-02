@@ -95,6 +95,21 @@ tasks.named<Delete>("clean") {
     delete(file(generatedDir))
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+// 기본 test는 단위/슬라이스 테스트만. Docker가 필요한 통합 테스트(@Tag("integration"))는 제외.
+tasks.test {
+    useJUnitPlatform {
+        excludeTags("integration")
+    }
+}
+
+// 통합 테스트 전용 태스크. Docker(Testcontainers) 필요: ./gradlew integrationTest
+val integrationTest by tasks.registering(Test::class) {
+    description = "Runs integration tests (requires Docker / Testcontainers)."
+    group = "verification"
+    useJUnitPlatform {
+        includeTags("integration")
+    }
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter(tasks.test)
 }
