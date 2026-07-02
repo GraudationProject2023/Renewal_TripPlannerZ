@@ -22,3 +22,37 @@ export interface Trip {
   visibility: TripVisibility
   createdAt: string
 }
+
+/** 백엔드 TripItemResponse와 1:1. 일정 안의 개별 장소. */
+export interface TripItem {
+  id: number
+  dayNumber: number
+  sortOrder: number
+  placeName: string
+  memo: string | null
+  estimatedCost: number | null
+  stayMinutes: number | null
+  latitude: number | null
+  longitude: number | null
+}
+
+/** 백엔드 RouteResponse와 1:1. 하루 최적 경로 결과. */
+export interface RouteResponse {
+  dayNumber: number
+  totalDistanceKm: number
+  stops: RouteStop[]
+}
+
+export interface RouteStop {
+  itemId: number
+  placeName: string
+  latitude: number
+  longitude: number
+}
+
+/** 백엔드 TripItemReorderRequest.ItemOrder와 1:1. */
+export interface TripItemOrder {
+  itemId: number
+  dayNumber: number
+  sortOrder: number
+}
