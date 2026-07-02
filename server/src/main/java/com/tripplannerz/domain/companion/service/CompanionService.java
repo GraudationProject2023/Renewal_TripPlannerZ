@@ -6,6 +6,7 @@ import com.tripplannerz.domain.companion.dto.CompanionSummaryResponse;
 import com.tripplannerz.domain.companion.dto.CompanionUpdateRequest;
 import com.tripplannerz.domain.companion.entity.Companion;
 import com.tripplannerz.domain.companion.entity.CompanionStatus;
+import com.tripplannerz.domain.chat.service.ChatService;
 import com.tripplannerz.domain.companion.mapper.CompanionMapper;
 import com.tripplannerz.domain.companion.repository.CompanionRepository;
 import com.tripplannerz.global.common.PageResponse;
@@ -24,6 +25,7 @@ public class CompanionService {
 
     private final CompanionRepository companionRepository;
     private final CompanionMapper companionMapper;
+    private final ChatService chatService;
 
     @Transactional
     public CompanionResponse create(Long hostId, CompanionCreateRequest request) {
@@ -39,7 +41,9 @@ public class CompanionService {
                 .capacity(request.capacity())
                 .budget(request.budget())
                 .build();
-        return companionMapper.toResponse(companionRepository.save(companion));
+        Companion saved = companionRepository.save(companion);
+        chatService.createRoom(saved.getId(), hostId); // 동행 채팅방 생성 + 호스트 참여
+        return companionMapper.toResponse(saved);
     }
 
     public CompanionResponse getById(Long companionId) {

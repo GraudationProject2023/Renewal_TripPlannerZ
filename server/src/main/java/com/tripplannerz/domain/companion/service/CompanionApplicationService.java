@@ -6,6 +6,7 @@ import com.tripplannerz.domain.companion.entity.ApplicationStatus;
 import com.tripplannerz.domain.companion.entity.Companion;
 import com.tripplannerz.domain.companion.entity.CompanionApplication;
 import com.tripplannerz.domain.companion.mapper.CompanionApplicationMapper;
+import com.tripplannerz.domain.chat.service.ChatService;
 import com.tripplannerz.domain.companion.repository.CompanionApplicationRepository;
 import com.tripplannerz.domain.companion.repository.CompanionRepository;
 import com.tripplannerz.domain.notification.entity.NotificationType;
@@ -26,6 +27,7 @@ public class CompanionApplicationService {
     private final CompanionRepository companionRepository;
     private final CompanionApplicationMapper applicationMapper;
     private final NotificationService notificationService;
+    private final ChatService chatService;
 
     @Transactional
     public ApplicationResponse apply(Long companionId, Long applicantId, ApplicationCreateRequest request) {
@@ -73,6 +75,7 @@ public class CompanionApplicationService {
         if (accepted + 1 >= companion.acceptableSlots()) {
             companion.close();
         }
+        chatService.addMemberByCompanion(companionId, application.getApplicantId()); // 채팅방 합류
         notificationService.create(
                 application.getApplicantId(),
                 NotificationType.COMPANION_APPLICATION_ACCEPTED,
