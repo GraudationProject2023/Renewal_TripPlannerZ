@@ -154,16 +154,18 @@
   --color-neutral-50: #f9f9fb;
   --color-neutral-0: #ffffff;
 
-  --color-primary-900: #2c1666;
-  --color-primary-800: #432099;
-  --color-primary-700: #592bcc;
-  --color-primary-600: #6f36ff;
-  --color-primary-500: #8c5eff;
-  --color-primary-400: #a986ff;
-  --color-primary-300: #c5afff;
-  --color-primary-200: #e2d7ff;
-  --color-primary-100: #eee8ff;
-  --color-primary-50: #f7f3ff;
+  /* Brand: 연한 하늘색(sky) 베이스. 50~200은 연한 하늘 톤(배경/hover),
+     600은 흰 글자 대비를 확보한 액션 컬러, 700은 hover/press. */
+  --color-primary-900: #0c4a6e;
+  --color-primary-800: #075985;
+  --color-primary-700: #0369a1;
+  --color-primary-600: #0284c7;
+  --color-primary-500: #0ea5e9;
+  --color-primary-400: #38bdf8;
+  --color-primary-300: #7dd3fc;
+  --color-primary-200: #bae6fd;
+  --color-primary-100: #e0f2fe;
+  --color-primary-50: #f0f9ff;
 
   --color-error-600: #e64848;
   --color-error-500: #e95f5f;
