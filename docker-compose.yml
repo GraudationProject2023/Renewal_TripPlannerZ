@@ -6,7 +6,8 @@ services:
     container_name: tripplannerz-postgres
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      # 호스트 5432는 네이티브 Postgres가 점유 → 5433으로 매핑. 앱도 5433으로 붙는다.
+      - '5433:5432'
     environment:
       POSTGRES_DB: tripplannerz
       POSTGRES_USER: tripplannerz
