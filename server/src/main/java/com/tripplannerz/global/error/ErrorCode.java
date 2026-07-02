@@ -30,7 +30,8 @@ public enum ErrorCode {
     TRIP_INVALID_PERIOD(HttpStatus.BAD_REQUEST, "TRIP_INVALID_PERIOD", "여행 종료일은 시작일보다 빠를 수 없습니다."),
 
     // --- Companion ---
-    COMPANION_NOT_FOUND(HttpStatus.NOT_FOUND, "COMPANION_NOT_FOUND", "동행 모집글을 찾을 수 없습니다.");
+    COMPANION_NOT_FOUND(HttpStatus.NOT_FOUND, "COMPANION_NOT_FOUND", "동행 모집글을 찾을 수 없습니다."),
+    COMPANION_INVALID_PERIOD(HttpStatus.BAD_REQUEST, "COMPANION_INVALID_PERIOD", "동행 종료일은 시작일보다 빠를 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
