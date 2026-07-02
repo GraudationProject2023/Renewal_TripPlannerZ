@@ -18,9 +18,11 @@ export const DashboardShell = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <AppHeader />
-      <div className="mx-auto flex w-full max-w-7xl">
+      <div className="flex">
         <AppSidebar />
-        <main className="min-w-0 flex-1 px-6 py-8 md:px-10">{children}</main>
+        <main className="min-w-0 flex-1 px-6 py-8 md:px-10">
+          <div className="mx-auto max-w-6xl">{children}</div>
+        </main>
       </div>
     </div>
   )
