@@ -11,8 +11,8 @@
 **3년 전 CRA·JS 졸업작품(`/client`)에서 모노레포·TS·FSD로 처음부터 재구축**하는 프로젝트다.
 
 - `/client` — 프론트 레거시(2023). **참조 전용, 절대 수정하지 않는다.** 요구사항/UX 참고용.
-- `/src` — 백엔드 레거시(Spring Boot 3.0.5 · Java 17). **재작성 대상.** 도메인/요구사항 참고용이며, 신규 구현은 아래 [백엔드 명세](#백엔드-server--java--spring-boot)를 따른다.
-- 프론트 신규 작업은 `packages/ui`(FSD) + `apps/web`(서빙), 백엔드 신규 작업은 재작성 스펙 기준으로 진행한다.
+- 백엔드 레거시(`/src`, Spring Boot 3.0.5 · Java 17)는 **재작성 완료 후 삭제**됨(필요 시 git 히스토리 참조).
+- 프론트 신규 작업은 `packages/ui`(FSD) + `apps/web`(서빙), 백엔드 신규 작업은 `/server` 재작성 스펙 기준으로 진행한다.
 
 ---
 
@@ -178,24 +178,26 @@ pnpm --filter @ui test         # ui 패키지 테스트만
 ```
 com.tripplannerz
 ├─ global/                      # 횡단 관심사 (도메인 무관)
-│  ├─ config/                   # Security, Web, Jpa, Redis, OpenAPI, Cors ...
+│  ├─ config/                   # Security, Jpa(Auditing), OpenAPI, Cors, WebSocket(STOMP)
 │  ├─ common/                   # ApiResponse, PageResponse, BaseEntity(감사필드)
 │  ├─ error/                    # ErrorCode(enum), BusinessException, GlobalExceptionHandler
-│  ├─ security/                 # JWT provider/filter, 인증 principal, @CurrentUser
-│  └─ util/
+│  └─ security/                 # JwtProvider, JwtAuthenticationFilter, RefreshTokenStore(Redis)
 └─ domain/
-   ├─ member/                   # 회원/인증
-   │  ├─ controller/  service/  repository/  entity/  dto/  mapper/
-   ├─ trip/                     # 여행 일정
-   ├─ companion/                # 동행 모집/지원/매칭 (레거시 party/memberParty)
-   ├─ location/                 # 장소·동선·경로 최적화
-   ├─ budget/                   # 예산·정산
-   ├─ chat/                     # 실시간 채팅 (STOMP)
-   └─ notification/             # 알림
+   ├─ member/                   # 회원/인증(JWT)  — controller·service·repository·entity·dto·mapper
+   ├─ trip/                     # 여행 일정 · 장소 · 경로 최적화(lib: RouteOptimizer)
+   ├─ companion/                # 동행 모집/지원/매칭
+   ├─ budget/                   # 지출 · 예산 요약 · 정산
+   ├─ notification/             # 알림
+   └─ chat/                     # 실시간 채팅 (STOMP)
 ```
 
 - 도메인 간 참조는 **service 계층을 통해서만**. 다른 도메인의 repository/entity 직접 접근 금지.
+- 연관은 **엔티티 참조 대신 식별자(id)** 로 보관해 결합을 낮춘다(FK는 DB에만).
 - 순환 참조가 생기면 도메인 경계 설계가 틀린 신호로 보고 재검토한다.
+- 경로 최적화 등 장소 로직은 별도 `location` 도메인이 아니라 **`trip` 도메인 내부**에 둔다(같은 애그리거트).
+
+**표준 응답 팩터리**: `ApiResponse.onSuccess(data)` / `onSuccessEmpty()` / `onFailure(error)`
+(record 컴포넌트 접근자 `success()`와의 충돌을 피하기 위해 `success/error`가 아닌 이 이름을 쓴다).
 
 ## 12. API 컨벤션
 
