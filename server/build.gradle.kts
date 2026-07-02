@@ -47,22 +47,26 @@ dependencies {
 
     // --- Persistence: QueryDSL + Flyway ---
     implementation("com.querydsl:querydsl-jpa:${property("queryDslVersion")}:jakarta")
-    annotationProcessor("com.querydsl:querydsl-apt:${property("queryDslVersion")}:jakarta")
-    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
-    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
-
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
     runtimeOnly("org.postgresql:postgresql")
 
     // --- Mapping ---
     implementation("org.mapstruct:mapstruct:${property("mapstructVersion")}")
-    annotationProcessor("org.mapstruct:mapstruct-processor:${property("mapstructVersion")}")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
 
     // --- Lombok ---
     compileOnly("org.projectlombok:lombok")
+
+    // --- Annotation processors (순서 중요) ---
+    // Lombok(+binding)이 MapStruct/QueryDSL보다 먼저 실행돼야 엔티티의 getter/builder가
+    // 생성된 뒤 매퍼/Q타입이 이를 읽을 수 있다. 순서가 바뀌면 환경에 따라
+    // "No implementation was created for XMapper ..." 컴파일 오류가 난다.
     annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${property("mapstructVersion")}")
+    annotationProcessor("com.querydsl:querydsl-apt:${property("queryDslVersion")}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 
     // --- API docs ---
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springDocVersion")}")
