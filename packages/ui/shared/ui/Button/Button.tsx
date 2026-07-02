@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         'solid-primary':
-          'border border-transparent bg-primary-600 text-white shadow-primary hover:-translate-y-0.5 hover:bg-primary-700 hover:shadow-primary-lg active:bg-primary-800 active:shadow-primary',
+          'border border-transparent bg-primary-500 text-white shadow-primary hover:-translate-y-0.5 hover:bg-primary-600 hover:shadow-primary-lg active:bg-primary-700 active:shadow-primary',
         'outlined-primary':
           'border border-primary-200 bg-primary-50/50 text-primary-700 hover:border-primary-300 hover:bg-primary-100/70 active:bg-primary-100',
         'outlined-secondary':
