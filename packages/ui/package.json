@@ -10,6 +10,7 @@
     "@tanstack/react-query-persist-client": "^5.80.7",
     "@types/lodash": "^4.17.17",
     "axios": "^1.8.4",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dompurify": "^3.3.1",
     "dotenv": "^16.4.7",
