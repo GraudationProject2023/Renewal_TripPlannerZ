@@ -47,6 +47,14 @@ public class TripItem extends BaseEntity {
     @Column(name = "stay_minutes")
     private Integer stayMinutes;
 
+    /** 위도. 경로 최적화에 사용. 미설정 가능. */
+    @Column
+    private Double latitude;
+
+    /** 경도. 경로 최적화에 사용. 미설정 가능. */
+    @Column
+    private Double longitude;
+
     @Builder
     private TripItem(
             Long tripId,
@@ -55,7 +63,9 @@ public class TripItem extends BaseEntity {
             String placeName,
             String memo,
             Long estimatedCost,
-            Integer stayMinutes) {
+            Integer stayMinutes,
+            Double latitude,
+            Double longitude) {
         this.tripId = tripId;
         this.dayNumber = dayNumber;
         this.sortOrder = sortOrder;
@@ -63,6 +73,12 @@ public class TripItem extends BaseEntity {
         this.memo = memo;
         this.estimatedCost = estimatedCost;
         this.stayMinutes = stayMinutes;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public boolean hasCoordinates() {
+        return this.latitude != null && this.longitude != null;
     }
 
     /** 드래그 앤 드롭 재정렬 시 일차/순서를 이동한다. */

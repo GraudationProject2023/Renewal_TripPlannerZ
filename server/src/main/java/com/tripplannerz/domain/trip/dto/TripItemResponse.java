@@ -7,5 +7,7 @@ public record TripItemResponse(
         String placeName,
         String memo,
         Long estimatedCost,
-        Integer stayMinutes) {
+        Integer stayMinutes,
+        Double latitude,
+        Double longitude) {
 }

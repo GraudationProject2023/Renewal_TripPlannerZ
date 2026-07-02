@@ -38,6 +38,8 @@ public class TripItemService {
                 .memo(request.memo())
                 .estimatedCost(request.estimatedCost())
                 .stayMinutes(request.stayMinutes())
+                .latitude(request.latitude())
+                .longitude(request.longitude())
                 .build();
         return tripItemMapper.toResponse(tripItemRepository.save(item));
     }
