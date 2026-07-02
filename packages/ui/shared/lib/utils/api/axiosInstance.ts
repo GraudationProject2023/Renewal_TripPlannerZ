@@ -34,6 +34,16 @@ export const getAccessToken = (): string | null => {
   return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)
 }
 
+export const setAccessToken = (token: string): void => {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token)
+}
+
+export const clearAccessToken = (): void => {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
+}
+
 const signOutFromBackend = async (): Promise<void> => {
   try {
     await axiosInstance.post('/user/auth/logout')
