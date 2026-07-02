@@ -1,10 +1,10 @@
 @layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 /* 앱/스토리북이 스캔할 소스 (Tailwind v4 content detection) */
-@source "./ui";
+@source "./shared";
 @source "./entities";
 @source "./features";
 @source "./widgets";
@@ -21,7 +21,7 @@
   }
 
   button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  [role='button']:not(:disabled) {
     cursor: pointer;
   }
 
@@ -178,6 +178,16 @@
   /* ── Shadows ── */
   --shadow-50: 0px 1px 4px rgba(12, 12, 13, 0.05);
   --shadow-100: 0 2px 20px rgba(0, 0, 0, 0.06);
+
+  /* 컬러 글로우 — solid 버튼 등 강조 액션의 입체감(hover 시 -lg로 확장). */
+  --shadow-primary: 0 4px 12px -3px
+    color-mix(in srgb, var(--color-primary-600) 45%, transparent);
+  --shadow-primary-lg: 0 8px 20px -4px
+    color-mix(in srgb, var(--color-primary-600) 55%, transparent);
+  --shadow-danger: 0 4px 12px -3px
+    color-mix(in srgb, var(--color-error-600) 45%, transparent);
+  --shadow-danger-lg: 0 8px 20px -4px
+    color-mix(in srgb, var(--color-error-600) 55%, transparent);
 }
 
 /* dark mode */
