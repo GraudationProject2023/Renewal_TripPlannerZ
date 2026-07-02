@@ -39,7 +39,10 @@ public enum ErrorCode {
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "APPLICATION_NOT_FOUND", "지원 내역을 찾을 수 없습니다."),
 
     // --- Budget / Settlement ---
-    EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXPENSE_NOT_FOUND", "지출 항목을 찾을 수 없습니다.");
+    EXPENSE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXPENSE_NOT_FOUND", "지출 항목을 찾을 수 없습니다."),
+
+    // --- Notification ---
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
